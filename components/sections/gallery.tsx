@@ -1,43 +1,51 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import NextImage from "next/image"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Section } from "@/components/section"
-import { motion } from "motion/react"
-import { Cormorant_Garamond, WindSong } from "next/font/google"
-import { siteConfig } from "@/content/site"
-// Removed circular gallery in favor of a responsive masonry layout
+import { Great_Vibes, Playfair_Display, Inter } from "next/font/google"
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-})
-
-const windSong = WindSong({
+const greatVibes = Great_Vibes({
   subsets: ["latin"],
   weight: "400",
 })
 
-const galleryHashtag = "#DanielAndFlorenceWedding"
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+})
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+})
 
 const galleryItems = [
-  { image: "/images/3rd Part/1.webp", text: " " },
-  { image: "/images/3rd Part/2.webp", text: " " },
-  { image: "/images/3rd Part/3.webp", text: " " },
-  { image: "/images/3rd Part/4.webp", text: " " },
-  { image: "/images/3rd Part/5.webp", text: " " },
-  { image: "/images/3rd Part/6.webp", text: " " },
+  { image: "/mobile-background/debut (1).webp", text: "Wine-red Reverie" },
+  { image: "/mobile-background/debut (2).webp", text: "Golden Light" },
+  { image: "/mobile-background/debut (3).webp", text: "Velvet Steps" },
+  { image: "/mobile-background/debut (4).webp", text: "Gilded Whispers" },
+  { image: "/desktop-background/debut (5).webp", text: "Crimson Glow" },
+  { image: "/desktop-background/debut (4).webp", text: "Evening Poise" },
+  { image: "/desktop-background/debut (1).webp", text: "Radiant Silhouette" },
+  { image: "/desktop-background/debut (3).webp", text: "Crimson Glow" },
+]
 
+const tileLayouts = [
+  "md:col-span-3 md:row-span-3 md:col-start-1 md:row-start-1",
+  "md:col-span-2 md:row-span-3 md:col-start-4 md:row-start-1",
+  "md:col-span-1 md:row-span-3 md:col-start-6 md:row-start-1",
+  "md:col-span-3 md:row-span-2 md:col-start-1 md:row-start-4",
+  "md:col-span-3 md:row-span-2 md:col-start-4 md:row-start-4",
+  "md:col-span-2 md:row-span-1 md:col-start-1 md:row-start-6",
+  "md:col-span-2 md:row-span-1 md:col-start-3 md:row-start-6",
+  "md:col-span-2 md:row-span-1 md:col-start-5 md:row-start-6",
 ]
 
 export function Gallery() {
-  const { brideNickname, groomNickname } = siteConfig.couple
-  const coupleDisplayName = `${groomNickname} & ${brideNickname}`
   const [selectedImage, setSelectedImage] = useState<(typeof galleryItems)[0] | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
-  // reserved for potential skeleton tracking; not used after fade-in simplification
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
   const [touchDeltaX, setTouchDeltaX] = useState(0)
   const [zoomScale, setZoomScale] = useState(1)
@@ -48,15 +56,14 @@ export function Gallery() {
   const [panStart, setPanStart] = useState<{ x: number; y: number; panX: number; panY: number } | null>(null)
 
   useEffect(() => {
-    // Simulate loading for better UX
-    const timer = setTimeout(() => setIsLoading(false), 500)
+    const timer = setTimeout(() => setIsLoading(false), 600)
     return () => clearTimeout(timer)
   }, [])
 
-  const navigateImage = useCallback((direction: 'prev' | 'next') => {
+  const navigateImage = useCallback((direction: "prev" | "next") => {
     setCurrentIndex((prevIndex) => {
       let newIndex = prevIndex
-      if (direction === 'next') {
+      if (direction === "next") {
         newIndex = (prevIndex + 1) % galleryItems.length
       } else {
         newIndex = (prevIndex - 1 + galleryItems.length) % galleryItems.length
@@ -69,36 +76,33 @@ export function Gallery() {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (!selectedImage) return
-      if (e.key === 'ArrowLeft') navigateImage('prev')
-      if (e.key === 'ArrowRight') navigateImage('next')
-      if (e.key === 'Escape') setSelectedImage(null)
+
+      if (e.key === "ArrowLeft") navigateImage("prev")
+      if (e.key === "ArrowRight") navigateImage("next")
+      if (e.key === "Escape") setSelectedImage(null)
     }
 
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
+    window.addEventListener("keydown", handleKeyPress)
+    return () => window.removeEventListener("keydown", handleKeyPress)
   }, [selectedImage, currentIndex, navigateImage])
 
-  // Prevent background scroll when lightbox is open
   useEffect(() => {
     if (selectedImage) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden"
     } else {
-      document.body.style.overflow = ''
+      document.body.style.overflow = ""
     }
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = ""
     }
   }, [selectedImage])
 
-  // Preload adjacent images for smoother nav
   useEffect(() => {
     if (selectedImage) {
-      if (typeof window !== "undefined") {
-        const nextImg = new window.Image()
-        nextImg.src = galleryItems[(currentIndex + 1) % galleryItems.length].image
-        const prevImg = new window.Image()
-        prevImg.src = galleryItems[(currentIndex - 1 + galleryItems.length) % galleryItems.length].image
-      }
+      const next = new Image()
+      next.src = galleryItems[(currentIndex + 1) % galleryItems.length].image
+      const prev = new Image()
+      prev.src = galleryItems[(currentIndex - 1 + galleryItems.length) % galleryItems.length].image
     }
   }, [selectedImage, currentIndex])
 
@@ -112,342 +116,237 @@ export function Gallery() {
   return (
     <Section
       id="gallery"
-      className="relative bg-[#51080F] py-10 sm:py-12 md:py-16 lg:py-20 overflow-hidden"
+      className="relative bg-[#490505] py-14 sm:py-20 md:py-24 lg:py-28 overflow-hidden"
     >
-      {/* Background image */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Background image */}
-        <img
-          src="/Details/newBackground.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
-        {/* Overlay with #751A23 */}
-        <div className="absolute inset-0 bg-[#751A23]/40" />
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(252,225,182,0.18),transparent_55%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_25%,rgba(46,4,26,0.5),transparent_45%)] mix-blend-screen" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_85%,rgba(46,4,26,0.35),transparent_50%)]" />
       </div>
 
-      {/* Header */}
-      <div className="relative z-10 text-center mb-8 sm:mb-10 md:mb-12 px-4">
-        <div className="space-y-2 sm:space-y-3">
-          <p
-            className={`${cormorant.className} text-[0.7rem] sm:text-xs md:text-sm uppercase tracking-[0.28em] text-[#E1C49C]`}
-            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.75)" }}
-          >
-            Cherished Moments with {coupleDisplayName}
-          </p>
+      <div className="relative z-10 text-center px-4">
+        <div className="mx-auto max-w-3xl">
+          <p className="text-xs sm:text-sm tracking-[0.45em] uppercase text-[#FCE1B6]/75 mb-3">Crimson keepsakes</p>
           <h2
-            className="style-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#E1C49C]"
-            style={{ textShadow: "0 4px 18px rgba(0,0,0,0.9)" }}
+            className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl text-[#FCE1B6]`}
           >
-            Our Love Story in Pictures
+            Gallery of Gilded Evenings
           </h2>
-        </div>
-
-        <p className={`${cormorant.className} text-xs sm:text-sm md:text-base text-[#E1C49C]/95 font-light max-w-xl mx-auto leading-relaxed mt-3`}>
-          Beautiful frames capturing the journey of Daniel & Florence — each photograph a precious memory of laughter, love, and the moments that led us to forever.
-        </p>
-
-        <div className="flex items-center justify-center gap-2 mt-6">
-          <div className="w-8 sm:w-12 h-px bg-gradient-to-r from-transparent via-[#751A23]/80 to-transparent" />
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-[#751A23]/80"
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.7, 1, 0.7],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <div className="w-8 sm:w-12 h-px bg-gradient-to-l from-transparent via-[#751A23]/80 to-transparent" />
+          <p className={`${inter.className} text-sm sm:text-base md:text-lg text-[#FCE1B6]/85 mt-4 leading-relaxed`}>
+            Moments draped in wine red, gold, and black—Kaith's debut glow, framed for you to relive.
+          </p>
         </div>
       </div>
 
-      {/* Gallery content */}
-      <div className="relative z-10 w-full">
-        <div className="flex justify-center px-4 sm:px-5 md:px-6">
-          <div className="max-w-5xl w-full">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-48 sm:h-60 md:h-72">
-                <div className="w-10 h-10 border-[3px] border-[#E1C49C]/40 border-t-[#751A23] rounded-full animate-spin" />
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3.5 md:gap-4.5">
+      <div className="relative z-10 mt-12 sm:mt-14 lg:mt-16 w-full">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-64 sm:h-80 md:h-96">
+              <div className="w-14 h-14 border-[3px] border-[#2E041A]/30 border-t-[#FCE1B6] rounded-full animate-spin" />
+            </div>
+          ) : (
+            <div className="mx-auto max-w-5xl w-full px-1">
+              <div className="grid w-full min-h-[420px] sm:min-h-[460px] md:min-h-0 md:aspect-square grid-cols-2 sm:grid-cols-3 md:grid-cols-6 md:grid-rows-6 gap-2 sm:gap-3 md:gap-4">
                 {galleryItems.map((item, index) => (
-                  <motion.button
+                  <button
                     key={item.image + index}
                     type="button"
-                    className="group relative w-full overflow-hidden rounded-lg sm:rounded-xl bg-white/5 backdrop-blur-lg border border-white/15 shadow-lg hover:shadow-xl hover:border-white/40 transition-all duration-300"
+                    className={`group relative min-h-[190px] sm:min-h-0 overflow-hidden rounded-2xl sm:rounded-3xl border border-[#FCE1B6]/20 bg-[#2E041A]/60 backdrop-blur-sm shadow-[0_18px_35px_rgba(46,4,26,0.45)] transition-all duration-500 hover:shadow-[0_26px_50px_rgba(46,4,26,0.65)] hover:border-[#FCE1B6]/40 ${tileLayouts[index] ?? ""}`}
                     onClick={() => {
                       setSelectedImage(item)
                       setCurrentIndex(index)
                     }}
                     aria-label={`Open image ${index + 1}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    {/* Subtle glow on hover */}
-                    <div className="absolute -inset-0.5 bg-gradient-to-br from-[#751A23]/45 via-[#A58169]/28 to-[#E1C49C]/20 rounded-lg sm:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
-                    
-                    <div className="relative aspect-[3/4] md:aspect-square overflow-hidden">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="absolute -inset-5 sm:-inset-6 bg-gradient-to-br from-[#FCE1B6]/25 via-transparent to-[#2E041A]/30 blur-2xl sm:blur-3xl" />
+                    </div>
+
+                    <div className="relative h-full w-full overflow-hidden">
                       <img
                         src={item.image}
                         alt={item.text || `Gallery image ${index + 1}`}
                         loading="lazy"
                         decoding="async"
-                        sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-110"
                       />
-                      {/* Gradient overlay on hover */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#751A23]/65 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#2E041A]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>
-                    
-                    {/* Image counter badge */}
-                    <div className="absolute top-2 right-2 bg-[#751A23]/90 backdrop-blur-sm rounded-full px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-[#751A23]/70">
-                      <span className="text-xs font-medium text-[#E1C49C] tracking-wide">
-                        {index + 1}/{galleryItems.length}
-                      </span>
+
+                    <div className="absolute bottom-2 sm:bottom-3 left-3 sm:left-4 right-3 sm:right-4 flex items-center justify-between text-[#FCE1B6]/95">
+                      <span className={`${playfair.className} text-[9px] sm:text-xs tracking-[0.25em] uppercase`}>{item.text}</span>
+                      <span className="text-[8px] sm:text-[10px] tracking-[0.38em] uppercase text-[#FCE1B6]/70">{index + 1}/{galleryItems.length}</span>
                     </div>
-                  </motion.button>
+                  </button>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Lightbox Modal - Compact for iPhone SE */}
       {selectedImage && (
         <div
-          className="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-1 sm:p-2 md:p-4"
+          className="fixed inset-0 z-[9999] bg-[#1A0310]/95 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4"
           onClick={() => {
             setSelectedImage(null)
             resetZoom()
           }}
         >
-            <div
-              className="relative max-w-6xl w-full h-full sm:h-auto flex flex-col items-center justify-center"
-              onTouchStart={(e) => {
-                if (e.touches.length === 1) {
-                  const now = Date.now()
-                  if (now - lastTap < 300) {
-                    setZoomScale((s) => (s > 1 ? 1 : 2))
-                    setPan({ x: 0, y: 0 })
-                  }
-                  setLastTap(now)
-                  const t = e.touches[0]
-                  setTouchStartX(t.clientX)
-                  setTouchDeltaX(0)
-                  if (zoomScale > 1) {
-                    setPanStart({ x: t.clientX, y: t.clientY, panX: pan.x, panY: pan.y })
-                  }
+          <div
+            className="relative max-w-6xl w-full h-full sm:h-auto flex flex-col items-center justify-center"
+            onTouchStart={(e) => {
+              if (e.touches.length === 1) {
+                const now = Date.now()
+                if (now - lastTap < 300) {
+                  setZoomScale((s) => (s > 1 ? 1 : 2))
+                  setPan({ x: 0, y: 0 })
                 }
-                if (e.touches.length === 2) {
-                  const dx = e.touches[0].clientX - e.touches[1].clientX
-                  const dy = e.touches[0].clientY - e.touches[1].clientY
-                  const dist = Math.hypot(dx, dy)
-                  setPinchStartDist(dist)
-                  setPinchStartScale(zoomScale)
-                }
-              }}
-              onTouchMove={(e) => {
-                if (e.touches.length === 2 && pinchStartDist) {
-                  const dx = e.touches[0].clientX - e.touches[1].clientX
-                  const dy = e.touches[0].clientY - e.touches[1].clientY
-                  const dist = Math.hypot(dx, dy)
-                  const scale = clamp((dist / pinchStartDist) * pinchStartScale, 1, 3)
-                  setZoomScale(scale)
-                } else if (e.touches.length === 1) {
-                  const t = e.touches[0]
-                  if (zoomScale > 1 && panStart) {
-                    const dx = t.clientX - panStart.x
-                    const dy = t.clientY - panStart.y
-                    setPan({ x: panStart.panX + dx, y: panStart.panY + dy })
-                  } else if (touchStartX !== null) {
-                    setTouchDeltaX(t.clientX - touchStartX)
-                  }
-                }
-              }}
-              onTouchEnd={() => {
-                setPinchStartDist(null)
-                setPanStart(null)
-                if (zoomScale === 1 && Math.abs(touchDeltaX) > 50) {
-                  navigateImage(touchDeltaX > 0 ? 'prev' : 'next')
-                }
-                setTouchStartX(null)
+                setLastTap(now)
+                const t = e.touches[0]
+                setTouchStartX(t.clientX)
                 setTouchDeltaX(0)
-              }}
-            >
-            {/* Top bar with counter and close - Compact for iPhone SE */}
-            <div className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between p-2 sm:p-3 md:p-4 lg:p-6">
-              {/* Image counter - Smaller on mobile */}
-              <div className="bg-[#751A23]/90 backdrop-blur-md rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 border border-[#751A23]/70">
-                <span className="text-xs sm:text-sm md:text-base font-medium text-[#E1C49C]">
+                if (zoomScale > 1) {
+                  setPanStart({ x: t.clientX, y: t.clientY, panX: pan.x, panY: pan.y })
+                }
+              }
+              if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX
+                const dy = e.touches[0].clientY - e.touches[1].clientY
+                const dist = Math.hypot(dx, dy)
+                setPinchStartDist(dist)
+                setPinchStartScale(zoomScale)
+              }
+            }}
+            onTouchMove={(e) => {
+              if (e.touches.length === 2 && pinchStartDist) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX
+                const dy = e.touches[0].clientY - e.touches[1].clientY
+                const dist = Math.hypot(dx, dy)
+                const scale = clamp((dist / pinchStartDist) * pinchStartScale, 1, 3)
+                setZoomScale(scale)
+              } else if (e.touches.length === 1) {
+                const t = e.touches[0]
+                if (zoomScale > 1 && panStart) {
+                  const dx = t.clientX - panStart.x
+                  const dy = t.clientY - panStart.y
+                  setPan({ x: panStart.panX + dx, y: panStart.panY + dy })
+                } else if (touchStartX !== null) {
+                  setTouchDeltaX(t.clientX - touchStartX)
+                }
+              }
+            }}
+            onTouchEnd={() => {
+              setPinchStartDist(null)
+              setPanStart(null)
+              if (zoomScale === 1 && Math.abs(touchDeltaX) > 50) {
+                navigateImage(touchDeltaX > 0 ? "prev" : "next")
+              }
+              setTouchStartX(null)
+              setTouchDeltaX(0)
+            }}
+          >
+            <div className="absolute inset-x-0 top-0 z-30 flex items-start justify-between px-3 sm:px-6 pt-3 sm:pt-6">
+              <div className="bg-[#2E041A]/80 backdrop-blur-md rounded-full px-3 sm:px-4 py-1.5 sm:py-2 border border-[#FCE1B6]/30 shadow-[0_12px_24px_rgba(5,1,4,0.45)]">
+                <span className="text-xs sm:text-sm font-medium text-[#FCE1B6] tracking-[0.18em]">
                   {currentIndex + 1} / {galleryItems.length}
                 </span>
               </div>
-              
-              {/* Close button - Compact but touch-friendly */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setSelectedImage(null)
-                  resetZoom()
-                }}
-                className="bg-[#751A23]/90 hover:bg-[#751A23] active:bg-[#751A23]/95 backdrop-blur-md rounded-full p-1.5 sm:p-2 md:p-2.5 lg:p-3 transition-all duration-200 border border-[#751A23]/70 hover:border-[#751A23] touch-manipulation"
-                aria-label="Close lightbox"
-              >
-                <X size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#E1C49C]" />
-              </button>
             </div>
 
-            {/* Navigation buttons - Compact for iPhone SE */}
             {galleryItems.length > 1 && (
               <>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
-                    navigateImage('prev')
+                    navigateImage("prev")
                     resetZoom()
                   }}
-                  className="absolute left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 z-20 bg-[#751A23]/90 hover:bg-[#751A23] active:bg-[#751A23]/95 backdrop-blur-md rounded-full p-2 sm:p-2.5 md:p-3 lg:p-4 transition-all duration-200 border border-[#751A23]/70 hover:border-[#751A23] touch-manipulation"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 bg-[#2E041A]/70 hover:bg-[#2E041A]/90 backdrop-blur-md rounded-full p-3 sm:p-4 transition-all duration-200 border border-[#FCE1B6]/30 hover:border-[#FCE1B6]/60"
                   aria-label="Previous image"
                 >
-                  <ChevronLeft size={18} className="sm:w-6 sm:h-6 md:w-7 md:h-7 text-[#E1C49C]" />
+                  <ChevronLeft size={24} className="sm:w-7 sm:h-7 text-[#FCE1B6]" />
                 </button>
 
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
-                    navigateImage('next')
+                    navigateImage("next")
                     resetZoom()
                   }}
-                  className="absolute right-1 sm:right-2 md:right-4 top-1/2 -translate-y-1/2 z-20 bg-[#751A23]/90 hover:bg-[#751A23] active:bg-[#751A23]/95 backdrop-blur-md rounded-full p-2 sm:p-2.5 md:p-3 lg:p-4 transition-all duration-200 border border-[#751A23]/70 hover:border-[#751A23] touch-manipulation"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 bg-[#2E041A]/70 hover:bg-[#2E041A]/90 backdrop-blur-md rounded-full p-3 sm:p-4 transition-all duration-200 border border-[#FCE1B6]/30 hover:border-[#FCE1B6]/60"
                   aria-label="Next image"
                 >
-                  <ChevronRight size={18} className="sm:w-6 sm:h-6 md:w-7 md:h-7 text-[#E1C49C]" />
+                  <ChevronRight size={24} className="sm:w-7 sm:h-7 text-[#FCE1B6]" />
                 </button>
               </>
             )}
 
-            {/* Image container - Optimized for iPhone SE */}
-            <div className="relative w-full h-full flex items-center justify-center pt-12 sm:pt-14 md:pt-16 lg:pt-20 pb-2 sm:pb-3 md:pb-4 lg:pb-6 overflow-hidden">
+            <div className="relative w-full h-full flex items-center justify-center pt-16 sm:pt-20 pb-4 sm:pb-6 overflow-hidden">
               <div
                 className="relative inline-block max-w-full max-h-full"
                 onClick={(e) => e.stopPropagation()}
               >
-                <img
-                  src={selectedImage.image || "/placeholder.svg"}
-                  alt={selectedImage.text || "Gallery image"}
-                  style={{ 
-                    transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomScale})`, 
-                    transition: pinchStartDist ? 'none' : 'transform 200ms ease-out' 
-                  }}
-                  className="max-w-full max-h-[calc(100vh-4rem)] sm:max-h-[calc(100vh-5rem)] md:max-h-[85vh] object-contain rounded sm:rounded-lg shadow-2xl will-change-transform"
-                />
-                
-                {/* Close button on image - Top right */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
                     setSelectedImage(null)
                     resetZoom()
                   }}
-                  className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-[#751A23]/90 hover:bg-[#751A23] active:bg-[#751A23]/95 backdrop-blur-md rounded-full p-1.5 sm:p-2 md:p-2.5 transition-all duration-200 border border-[#751A23]/70 hover:border-[#751A23] touch-manipulation z-30"
+                  className="absolute top-3 right-3 z-40 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-[#FCE1B6]/35 bg-[#2E041A]/80 backdrop-blur-md shadow-[0_14px_28px_rgba(23,2,14,0.6)] transition-all duration-200 hover:scale-105"
                   aria-label="Close lightbox"
                 >
-                  <X size={16} className="sm:w-5 sm:h-5 md:w-6 md:h-6 text-[#E1C49C]" />
+                  <span className="absolute inset-0 rounded-full bg-gradient-to-br from-[#FCE1B6]/35 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                  <X size={18} className="sm:w-6 sm:h-6 text-[#FCE1B6] drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]" />
                 </button>
-                
-                {/* Zoom reset button - Compact */}
+                <img
+                  src={selectedImage.image || "/placeholder.svg"}
+                  alt={selectedImage.text || "Gallery image"}
+                  style={{
+                    transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomScale})`,
+                    transition: pinchStartDist ? "none" : "transform 200ms ease-out",
+                  }}
+                  className="max-w-full max-h-[75vh] sm:max-h-[85vh] object-contain rounded-2xl shadow-[0_35px_65px_rgba(23,2,14,0.75)]"
+                />
+
                 {zoomScale > 1 && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
                       resetZoom()
                     }}
-                    className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 bg-[#751A23]/90 hover:bg-[#751A23] active:bg-[#751A23]/95 backdrop-blur-md text-[#E1C49C] rounded-full px-2 py-1 sm:px-3 sm:py-1.5 text-[10px] sm:text-xs font-medium border border-[#751A23]/70 transition-all duration-200 touch-manipulation z-20"
+                    className="absolute bottom-2 right-2 bg-[#2E041A]/70 hover:bg-[#2E041A]/90 backdrop-blur-md text-[#FCE1B6] rounded-full px-3 py-1.5 text-xs font-medium border border-[#FCE1B6]/25 transition-all duration-200"
                   >
-                    Reset
+                    Reset Zoom
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Bottom hint for mobile - Compact */}
             {galleryItems.length > 1 && (
-              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 sm:hidden z-20">
-                <p className="text-[10px] text-[#E1C49C]/70 bg-[#751A23]/90 backdrop-blur-sm rounded-full px-2 py-1 border border-[#751A23]/70">
-                  Swipe
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 sm:hidden z-20">
+                <p className="text-xs text-[#FCE1B6]/80 bg-[#2E041A]/70 backdrop-blur-sm rounded-full px-3 py-1.5 border border-[#FCE1B6]/20">
+                  Swipe to navigate
                 </p>
               </div>
             )}
           </div>
         </div>
       )}
-      {/* View more button */}
-      <div className="relative z-10 mt-8 sm:mt-10 md:mt-12 flex justify-center px-4">
-        <motion.a
+
+      <div className="relative z-10 mt-12 sm:mt-14 md:mt-16 flex justify-center px-4">
+        <a
           href="/gallery"
-          className="group inline-flex items-center gap-2 px-6 sm:px-8 md:px-10 lg:px-12 py-3 sm:py-3.5 md:py-4 rounded-lg sm:rounded-xl font-semibold sm:font-bold transition-all duration-300 uppercase tracking-wider text-xs sm:text-sm md:text-base whitespace-nowrap relative overflow-hidden border-2 backdrop-blur-sm"
-          style={{
-            backgroundColor: "#751A23",
-            borderColor: "#751A23",
-            color: "#E1C49C",
-            boxShadow: "0 6px 26px rgba(117,26,35,0.45), 0 2px 10px rgba(117,26,35,0.6)",
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          whileHover={{ scale: 1.05, y: -2 }}
-          whileTap={{ scale: 0.98 }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "#751A23";
-            e.currentTarget.style.borderColor = "#A58169";
-            e.currentTarget.style.boxShadow = "0 10px 34px rgba(117,26,35,0.55), 0 4px 14px rgba(117,26,35,0.8)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "#751A23";
-            e.currentTarget.style.borderColor = "#751A23";
-            e.currentTarget.style.boxShadow = "0 6px 26px rgba(117,26,35,0.45), 0 2px 10px rgba(117,26,35,0.6)";
-          }}
+          className="group relative inline-flex h-full min-h-[3.5rem] sm:min-h-[3.75rem] items-center justify-center overflow-hidden rounded-full border border-[#490505]/30 bg-[#FFE1BE] px-10 sm:px-12 md:px-14 text-[9px] sm:text-[10px] md:text-xs tracking-[0.48em] uppercase text-[#490505] shadow-[0_26px_58px_rgba(73,5,5,0.3)] transition-all duration-600 ease-out hover:-translate-y-2 hover:shadow-[0_36px_70px_rgba(73,5,5,0.4)]"
         >
-          <span className="relative z-10">View Full Gallery</span>
-          <motion.div
-            animate={{
-              x: [0, 4, 0],
-            }}
-            transition={{
-              duration: 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          >
-            <ChevronRight size={16} className="sm:w-5 sm:h-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
-          </motion.div>
-          <div 
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-[#751A23]/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 transform -skew-x-12 -translate-x-full group-hover:translate-x-full"
-          />
-          {/* Pulsing glow effect */}
-          <motion.div 
-            className="absolute inset-0 bg-[#751A23]/25 rounded-lg sm:rounded-xl blur-xl -z-10"
-            animate={{
-              opacity: [0.3, 0.6, 0.3],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </motion.a>
+          <span className="absolute inset-0 bg-gradient-to-r from-[#490505]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-600" />
+          <span className="absolute inset-[2px] rounded-full bg-[#FFE1BE] backdrop-blur-2xl border border-[#490505]/20" />
+          <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1100ms] ease-out bg-gradient-to-r from-transparent via-[#490505]/15 to-transparent" />
+          <span className="absolute inset-0 translate-x-full group-hover:-translate-x-full transition-transform duration-[1100ms] ease-out bg-gradient-to-l from-transparent via-[#490505]/10 to-transparent" />
+          <span className="relative z-10 inline-flex items-center justify-center">
+            View Full Gallery
+          </span>
+        </a>
       </div>
     </Section>
   )

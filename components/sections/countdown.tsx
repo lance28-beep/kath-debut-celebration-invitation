@@ -1,12 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
+
 import { Section } from "@/components/section"
-import Image from "next/image"
-import { motion } from "motion/react"
-import { Cormorant_Garamond, Cinzel } from "next/font/google"
-import { siteConfig } from "@/content/site"
+
 import Counter from "@/components/Counter"
+
+import { WindSong, Playfair_Display, Great_Vibes } from "next/font/google"
+
+import { siteConfig } from "@/content/site"
 
 interface TimeLeft {
   days: number
@@ -15,124 +17,22 @@ interface TimeLeft {
   seconds: number
 }
 
-interface CountdownUnitProps {
-  value: number
-  label: string
-}
+const windSong = WindSong({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+})
 
-const cormorant = Cormorant_Garamond({
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: "400",
+})
+
+const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 })
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["700"],
-})
-
-function CountdownUnit({ value, label }: CountdownUnitProps) {
-  const places = value >= 100 ? [100, 10, 1] : [10, 1]
-
-  return (
-    <div className="flex flex-col items-center gap-1.5 sm:gap-2">
-      {/* Elegant card with subtle hover glow */}
-      <div className="relative w-full max-w-[88px] sm:max-w-[96px] md:max-w-[110px] lg:max-w-[120px] group">
-        {/* Glow on hover */}
-        <div className="pointer-events-none absolute -inset-[3px] rounded-2xl bg-gradient-to-br from-[#E1C49C]/28 via-[#A58169]/18 to-transparent opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
-        <div className="pointer-events-none absolute inset-0 rounded-2xl bg-[#E1C49C]/5 blur-xl opacity-70" />
-
-        {/* Main card */}
-        <div className="relative rounded-xl sm:rounded-2xl border border-white/40/80 bg-white/95/90 px-2.5 py-2.5 sm:px-3.5 sm:py-3.5 md:px-4 md:py-4 shadow-[0_12px_32px_rgba(0,0,0,0.45)]">
-          <div className="relative z-10 flex items-center justify-center text-[#E1C49C]">
-            <Counter
-              value={value}
-              places={places}
-              fontSize={26}
-              padding={4}
-              gap={2}
-              textColor="#E1C49C"
-              fontWeight={800}
-              borderRadius={6}
-              horizontalPadding={3}
-              gradientHeight={0}
-              gradientFrom="transparent"
-              gradientTo="transparent"
-              counterStyle={{
-                backgroundColor: "transparent",
-                textShadow:
-                  "0 0 12px rgba(229,196,156,0.55), 0 0 24px rgba(229,196,156,0.35), 0 4px 12px rgba(0,0,0,0.35)",
-                filter: "drop-shadow(0 0 10px rgba(229,196,156,0.3))",
-              }}
-              digitStyle={{
-                minWidth: "1.15ch",
-                fontFamily: "Arial, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-                color: "#E1C49C",
-                textShadow:
-                  "0 0 10px rgba(229,196,156,0.6), 0 0 20px rgba(229,196,156,0.35), 0 2px 8px rgba(0,0,0,0.35)",
-              }}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Label */}
-      <span className="text-[10px] sm:text-xs md:text-sm font-inter font-semibold uppercase tracking-[0.16em] text-[#E1C49C]/90">
-        {label}
-      </span>
-    </div>
-  )
-}
-
 export function Countdown() {
-  const ceremonyDate = siteConfig.ceremony.date
-  const ceremonyTimeDisplay = siteConfig.ceremony.time
-  const [ceremonyMonth = "June", ceremonyDayRaw = "7", ceremonyYear = "2026"] = ceremonyDate.split(" ")
-  const ceremonyDayNumber = ceremonyDayRaw.replace(/[^0-9]/g, "") || "7"
-  const { brideNickname, groomNickname } = siteConfig.couple
-  const ceremonyDay = siteConfig.ceremony.day || "Thursday"
-  const ceremonyDayShort = ceremonyDay.slice(0, 3).toUpperCase()
-  // Parse the date: December 20, 2025 at 10:30 AM PH Time (GMT+0800)
-  // Extract time from "10:30 A.M., PH Time" -> "10:30 A.M."
-  const timeStr = ceremonyTimeDisplay.split(",")[0].trim() // "10:30 A.M."
-  
-  // Create date string in ISO-like format for better parsing
-  // December 20, 2025 -> 2025-12-20
-  const monthMap: { [key: string]: string } = {
-    "January": "01", "February": "02", "March": "03", "April": "04",
-    "May": "05", "June": "06", "July": "07", "August": "08",
-    "September": "09", "October": "10", "November": "11", "December": "12"
-  }
-  const monthNum = monthMap[ceremonyMonth] || "12"
-  const dayNum = ceremonyDayNumber.padStart(2, "0")
-  
-  // Parse time: "3:00 PM" -> 15:00
-  const timeMatch = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i)
-  let hour = 15 // default 3 PM
-  let minutes = 0
-  
-  if (timeMatch) {
-    hour = parseInt(timeMatch[1])
-    minutes = parseInt(timeMatch[2])
-    const ampm = timeMatch[3].toUpperCase()
-    if (ampm === "PM" && hour !== 12) hour += 12
-    if (ampm === "AM" && hour === 12) hour = 0
-  }
-  
-  // Create date in GMT+8 (PH Time)
-  // Using Date.UTC and adjusting for GMT+8 offset (subtract 8 hours to convert GMT+8 to UTC)
-  const parsedTargetDate = new Date(Date.UTC(
-    parseInt(ceremonyYear),
-    parseInt(monthNum) - 1,
-    parseInt(dayNum),
-    hour - 8, // Convert GMT+8 to UTC
-    minutes,
-    0
-  ))
-  
-  const targetTimestamp = Number.isNaN(parsedTargetDate.getTime())
-    ? new Date(Date.UTC(2026, 1, 8, 8, 0, 0)).getTime() // Fallback: February 8, 2026, 4:00 PM GMT+8 = 8:00 AM UTC
-    : parsedTargetDate.getTime()
-
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
     hours: 0,
@@ -142,7 +42,48 @@ export function Countdown() {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const targetDate = targetTimestamp
+      // Parse date from siteConfig.wedding.date: "FEB 8, 2026" or "February 8, 2026"
+      const dateStr = siteConfig.wedding.date
+      const timeStr = siteConfig.wedding.time // "4PM" or "3:00 PM"
+      
+      // Try to parse format: "February 14, 2026" or "FEB 8, 2026"
+      let dateMatch = dateStr.match(/(\w+)\s+(\d+),\s+(\d+)/)
+      
+      // If no match, try format without comma: "February 8 2026"
+      if (!dateMatch) {
+        dateMatch = dateStr.match(/(\w+)\s+(\d+)\s+(\d+)/)
+      }
+      
+      if (!dateMatch) return
+      
+      const [, monthName, day, year] = dateMatch
+      const monthMap: Record<string, number> = {
+        January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
+        July: 6, August: 7, September: 8, October: 9, November: 10, December: 11,
+        JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
+        JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11
+      }
+      
+      // Parse time: "4PM" or "3:00 PM" -> 16:00 or 15:00
+      const timeMatch = timeStr.match(/(\d+)(?::(\d+))?\s*(AM|PM)/i)
+      let hours = 0
+      let minutes = 0
+      if (timeMatch) {
+        hours = parseInt(timeMatch[1])
+        minutes = timeMatch[2] ? parseInt(timeMatch[2]) : 0
+        if (timeMatch[3].toUpperCase() === 'PM' && hours !== 12) hours += 12
+        if (timeMatch[3].toUpperCase() === 'AM' && hours === 12) hours = 0
+      }
+      
+      // Convert to UTC (assuming GMT+8, subtract 8 hours)
+      const targetDate = Date.UTC(
+        parseInt(year),
+        monthMap[monthName] ?? 0,
+        parseInt(day),
+        hours - 8,
+        minutes,
+        0
+      )
       const now = new Date().getTime()
       const difference = targetDate - now
 
@@ -154,6 +95,7 @@ export function Countdown() {
           seconds: Math.floor((difference / 1000) % 60),
         })
       } else {
+        // Event has passed or is happening now
         setTimeLeft({
           days: 0,
           hours: 0,
@@ -166,155 +108,232 @@ export function Countdown() {
     calculateTimeLeft()
     const timer = setInterval(calculateTimeLeft, 1000)
     return () => clearInterval(timer)
-  }, [targetTimestamp])
+  }, [])
+
+  const labelTaglines: Record<string, string> = {
+    Days: "Days of Dreaming",
+    Hours: "Hours of Sparkle",
+    Minutes: "Moments of Magic",
+    Seconds: "Heartbeats Away",
+  }
+
+  const CountdownUnit = ({ value, label }: { value: number; label: string }) => (
+    <div className="flex flex-col items-center gap-3 sm:gap-4">
+      {/* Simple, elegant card */}
+      <div className="relative group">
+        {/* Main card */}
+        <div className="relative bg-[#490505]/80 backdrop-blur-md rounded-xl sm:rounded-2xl px-3 py-4 sm:px-5 sm:py-5 md:px-6 md:py-6 lg:px-8 lg:py-7 border border-[#FCE1B6]/20 shadow-[0_12px_30px_rgba(73,5,5,0.35)] hover:shadow-[0_16px_38px_rgba(73,5,5,0.45)] transition-all duration-300 hover:border-[#FCE1B6]/30 min-w-[65px] sm:min-w-[75px] md:min-w-[90px] lg:min-w-[100px]">
+          {/* Counter */}
+          <div className="relative z-10 flex items-center justify-center">
+            <Counter
+              value={value}
+              places={value >= 100 ? [100, 10, 1] : [10, 1]}
+              fontSize={36}
+              padding={6}
+              gap={3}
+              textColor="#FCE1B6"
+              fontWeight={500}
+              borderRadius={8}
+              horizontalPadding={4}
+              gradientHeight={10}
+              gradientFrom="rgba(252,225,182,0.1)"
+              gradientTo="transparent"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced label */}
+      <div className="flex flex-col items-center text-center gap-1">
+        <span className={`${playfair.className} text-base sm:text-lg text-[#FCE1B6] tracking-[0.25em] uppercase`}>
+          {label}
+        </span>
+        <span className="text-[10px] sm:text-xs tracking-[0.45em] uppercase text-[#FCE1B6]/70">
+          {labelTaglines[label] ?? "Until the Celebration"}
+        </span>
+      </div>
+    </div>
+  )
+
+  // Parse date for display
+  const dateStr = siteConfig.wedding.date
+  let displayDate: Date | null = null
+  try {
+    // Try to parse the date string
+    const dateMatch = dateStr.match(/(\w+)\s+(\d+),\s+(\d+)/) || dateStr.match(/(\w+)\s+(\d+)\s+(\d+)/)
+    if (dateMatch) {
+      const [, monthName, day, year] = dateMatch
+      const monthMap: Record<string, number> = {
+        January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
+        July: 6, August: 7, September: 8, October: 9, November: 10, December: 11,
+        JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
+        JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11
+      }
+      displayDate = new Date(parseInt(year), monthMap[monthName] ?? 0, parseInt(day))
+    }
+  } catch (e) {
+    // Fallback to ceremony date if available
+    try {
+      displayDate = new Date(siteConfig.ceremony.date)
+    } catch (e2) {
+      displayDate = null
+    }
+  }
 
   return (
     <Section
       id="countdown"
-      className="relative bg-transparent py-10 sm:py-12 md:py-16 lg:py-20 overflow-hidden"
+      className="relative bg-[#490505] py-16 sm:py-20 md:py-24 lg:py-28 overflow-hidden"
     >
-      {/* Monogram - centered at top */}
-      <div className="relative flex justify-center pt-8 sm:pt-10 md:pt-12 mb-6 sm:mb-8 md:mb-10 z-10">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="relative"
-        >
-          <div className="relative w-72 h-72 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[40rem] xl:h-[40rem] opacity-90">
-            <Image
-              src="/monogram/monogram.png"
-              alt={`${groomNickname} & ${brideNickname} Monogram`}
-              fill
-              className="object-contain"
-              style={{
-                filter:
-                  "brightness(0) saturate(100%) invert(88%) sepia(19%) saturate(332%) hue-rotate(336deg) brightness(101%) contrast(90%) drop-shadow(0 0 22px rgba(229,196,156,0.7)) drop-shadow(0 0 38px rgba(229,196,156,0.45)) drop-shadow(0 10px 20px rgba(0,0,0,0.45))",
-              }}
-              priority={false}
-            />
-            {/* Glow effect behind monogram */}
-            <div className="absolute inset-0 blur-3xl bg-[#E1C49C]/25 -z-10 scale-125" />
-          </div>
-        </motion.div>
+      {/* Ornate pattern background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+        {/* Base pattern - diagonal lines forming diamonds */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(-45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(135deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px),
+              repeating-linear-gradient(225deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px)
+            `,
+            backgroundSize: '70px 70px, 70px 70px, 35px 35px, 35px 35px',
+          }}
+        />
+        
+        {/* Decorative scroll motifs - using SVG pattern */}
+        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+          <defs>
+            <pattern id="scrollPattern" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+              {/* Scroll motifs at intersections */}
+              <g fill="none" stroke="#FCE1B6" strokeWidth="0.5">
+                {/* Top scroll */}
+                <path d="M 70 0 Q 65 15 70 30 Q 75 15 70 0" />
+                {/* Bottom scroll */}
+                <path d="M 70 140 Q 65 125 70 110 Q 75 125 70 140" />
+                {/* Left scroll */}
+                <path d="M 0 70 Q 15 65 30 70 Q 15 75 0 70" />
+                {/* Right scroll */}
+                <path d="M 140 70 Q 125 65 110 70 Q 125 75 140 70" />
+                {/* Center decorative element */}
+                <path d="M 70 30 Q 60 50 70 70 Q 80 50 70 30" />
+                <path d="M 70 110 Q 60 90 70 70 Q 80 90 70 110" />
+                <path d="M 30 70 Q 50 60 70 70 Q 50 80 30 70" />
+                <path d="M 110 70 Q 90 60 70 70 Q 90 80 110 70" />
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#scrollPattern)" />
+        </svg>
+
+        {/* Subtle overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#490505]/80 via-transparent to-[#490505]/80" />
       </div>
 
       {/* Header */}
-      <div className="relative z-10 text-center mb-6 sm:mb-8 md:mb-10 px-3 sm:px-4">
-        {/* Decorative element above title */}
-        <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-[#E1C49C]/25" />
-          <div className="w-1.5 h-1.5 bg-gradient-to-br from-[#A58169] to-[#751A23] rounded-full shadow-[0_0_12px_rgba(165,129,105,0.9)]" />
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-[#E1C49C]/25" />
-        </div>
-        
-        <h2 className="imperial-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal text-[#E1C49C] mb-2 sm:mb-3 md:mb-4 drop-shadow-lg">
-          Counting down to our forever
-        </h2>
-        
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg text-[#E1C49C]/95 font-light max-w-xl mx-auto leading-relaxed px-2">
-          Every heartbeat brings us closer to the moment when two hearts become one. Join {groomNickname} and {brideNickname} as they count down to forever.
+      <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-16 px-4">
+        <p className="text-xs sm:text-sm md:text-base tracking-[0.45em] uppercase text-[#FCE1B6]/70 mb-3">
+          Crimson Evenings Await
         </p>
-        
-        {/* Decorative element below subtitle */}
-        <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
-          <div className="w-1 h-1 bg-[#E1C49C]/70 rounded-full" />
-          <div className="w-1 h-1 bg-[#E1C49C]/40 rounded-full" />
-          <div className="w-1 h-1 bg-[#E1C49C]/70 rounded-full" />
-        </div>
+        <h2
+          className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl lg:text-[3.8rem] text-[#FCE1B6] mb-3 sm:mb-4 drop-shadow-[0_18px_40px_rgba(8,18,46,0.65)]`}
+        >
+          Countdown to the Gilded Soirée
+        </h2>
+        <p className="text-sm sm:text-base md:text-lg text-[#FCE1B6]/85 font-light max-w-2xl mx-auto leading-relaxed">
+          Each heartbeat draws us nearer to a night draped in wine red, gold, and black—Kaith's luminous coming of age.
+        </p>
       </div>
 
-      {/* Save The Date Card */}
+      {/* Main countdown container */}
       <div className="relative z-10">
-        <div className="flex justify-center px-3 sm:px-4">
-          <div className="max-w-2xl w-full">
+        <div className="flex justify-center items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 mb-8 sm:mb-10 md:mb-12 flex-wrap px-4">
+          <CountdownUnit value={timeLeft.days} label="Days" />
+          <CountdownUnit value={timeLeft.hours} label="Hours" />
+          <CountdownUnit value={timeLeft.minutes} label="Minutes" />
+          <CountdownUnit value={timeLeft.seconds} label="Seconds" />
+        </div>
 
-            {/* Numeric countdown: Days / Hours / Minutes / Seconds */}
-            <div className="mt-2 sm:mt-4 md:mt-6 font-inter">
-              <div className="flex flex-col items-center gap-3 sm:gap-4 md:gap-6">
-                {/* 2x2 on mobile, 4 in a row from md+ */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full max-w-sm sm:max-w-md md:max-w-xl">
-                  <CountdownUnit value={timeLeft.days} label="Days" />
-                  <CountdownUnit value={timeLeft.hours} label="Hours" />
-                  <CountdownUnit value={timeLeft.minutes} label="Minutes" />
-                  <CountdownUnit value={timeLeft.seconds} label="Seconds" />
-                </div>
+        {/* Debut date presentation - Keepsake Card Style */}
+        <div className="flex justify-center px-4">
+          <div className="max-w-2xl w-full">
+            {/* Save The Date Header */}
+            <div className="text-center mb-8 sm:mb-10 md:mb-12">
+              <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
+                <div className="w-1 h-1 bg-[#FCE1B6]/60 rounded-full" />
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
+              </div>
+
+              <p className="text-xs sm:text-sm md:text-base font-medium text-[#FCE1B6] uppercase tracking-[0.25em] sm:tracking-[0.35em] mb-3 sm:mb-4">
+                Save The Debut Night
+              </p>
+
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
+                <div className="w-1 h-1 bg-[#FCE1B6]/60 rounded-full" />
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
+              </div>
+            </div>
+
+            {/* Date Section - Elegant Layout */}
+            <div className="text-center mb-8 sm:mb-10 md:mb-12">
+              {/* Month - Elegant script style */}
+              <div className="mb-4 sm:mb-5 md:mb-6">
+                <p
+                  className={`${windSong.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#FCE1B6] leading-none drop-shadow-[0_10px_35px_rgba(73,5,5,0.65)]`}
+                >
+                  {displayDate ? displayDate.toLocaleDateString('en-US', { month: 'long' }) : siteConfig.ceremony.date.split(' ')[0]}
+                </p>
+              </div>
+              
+              {/* Day and Year - Horizontal layout with divider */}
+              <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
+                {/* Day - Large and bold focal point */}
+                <p
+                  className="text-7xl sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[12rem] font-semibold text-[#FCE1B6] leading-none drop-shadow-[0_18px_35px_rgba(73,5,5,0.45)]"
+                >
+                  {displayDate ? displayDate.toLocaleDateString('en-US', { day: 'numeric' }) : siteConfig.ceremony.date.split(' ')[1]}
+                </p>
+                
+                {/* Vertical divider */}
+                <div className="h-16 sm:h-20 md:h-24 lg:h-28 w-px bg-gradient-to-b from-transparent via-[#FCE1B6]/60 to-transparent" />
+                
+                {/* Year - Elegant and refined */}
+                <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-[#FCE1B6] leading-none tracking-[0.2em] uppercase">
+                  {displayDate ? displayDate.toLocaleDateString('en-US', { year: 'numeric' }) : siteConfig.ceremony.date.split(' ')[2]}
+                </p>
+              </div>
+            </div>
+
+            {/* Time Section */}
+            <div className="text-center">
+              {/* Top decorative dots */}
+              <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
+                <div className="w-1 h-1 bg-[#FCE1B6]/60 rounded-full" />
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
+              </div>
+              
+              {/* Time */}
+              <div className="text-xs sm:text-sm md:text-base lg:text-lg font-medium text-[#FCE1B6]/85 tracking-[0.4em] uppercase mb-3 sm:mb-4">
+                <span className="block sm:inline">{siteConfig.wedding.time} • {siteConfig.ceremony.venue}</span>
+                {/* <span className="block sm:inline sm:before:content-['•'] sm:before:mx-2">
+                  {siteConfig.ceremony.location.includes(',') 
+                    ? siteConfig.ceremony.location.split(',').slice(-2).join(',').trim()
+                    : siteConfig.ceremony.location}
+                </span> */}
+              </div>
+              
+              {/* Bottom decorative dots */}
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
+                <div className="w-1 h-1 bg-[#FCE1B6]/60 rounded-full" />
+                <div className="w-1.5 h-1.5 bg-[#FCE1B6]/70 rounded-full" />
               </div>
             </div>
           </div>
-          
         </div>
-        
-            {/* Date Section - Layout matched with hero date block */}
-            <div className="relative sm:rounded-3xl p-6 sm:p-8 md:p-10 mb-6 sm:mb-8">
-              <div className="w-full max-w-2xl mx-auto">
-                <div
-                  className={`${cinzel.className} flex flex-col items-center gap-1.5 sm:gap-2.5 md:gap-3 text-[#E1C49C] font-bold`}
-                  style={{ textShadow: "0 4px 16px rgba(0,0,0,0.6)" }}
-                >
-                  {/* Month */}
-                  <span
-                    className="text-[0.65rem] sm:text-xs md:text-sm uppercase tracking-[0.4em] sm:tracking-[0.5em] text-[#E1C49C]"
-                    style={{ textShadow: "0 2px 14px rgba(229,196,156,0.65)" }}
-                  >
-                    {ceremonyMonth}
-                  </span>
-
-                  {/* Day and time row */}
-                  <div className="flex w-full items-center gap-2 sm:gap-4 md:gap-5">
-                    {/* Day of week & divider */}
-                    <div className="flex flex-1 items-center justify-end gap-1.5 sm:gap-2.5">
-                      <span className="h-[0.5px] flex-1 bg-[#E1C49C]/45" />
-                      <span
-                        className="text-[0.6rem] sm:text-[0.7rem] md:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[#E1C49C]"
-                        style={{ textShadow: "0 2px 14px rgba(229,196,156,0.65)" }}
-                      >
-                        {ceremonyDayShort}
-                      </span>
-                      <span className="h-[0.5px] w-6 sm:w-8 md:w-10 bg-[#E1C49C]/45" />
-                    </div>
-
-                    {/* Day number with glow */}
-                    <div className="relative flex items-center justify-center px-3 sm:px-4 md:px-5">
-                      <span
-                        aria-hidden="true"
-                        className="absolute inset-0 mx-auto h-[70%] max-h-[180px] w-[100px] sm:w-[140px] md:w-[170px] rounded-full bg-gradient-to-b from-[#E1C49C]/40 via-[#E1C49C]/25 to-transparent blur-[30px] opacity-85"
-                      />
-                      <span
-                        className={`${cinzel.className} relative text-[3rem] sm:text-[4.5rem] md:text-[5.5rem] lg:text-[6rem] font-bold leading-none tracking-wider text-[#E1C49C]`}
-                        style={{
-                          textShadow:
-                            "0 0 22px rgba(229,196,156,0.9), 0 0 40px rgba(229,196,156,0.7), 0 6px 20px rgba(0,0,0,0.55)",
-                          filter: "drop-shadow(0 0 26px rgba(229,196,156,0.65))",
-                        }}
-                      >
-                        {ceremonyDayNumber.padStart(2, "0")}
-                      </span>
-                    </div>
-
-                    {/* Time */}
-                    <div className="flex flex-1 items-center gap-1.5 sm:gap-2.5">
-                      <span className="h-[0.5px] w-6 sm:w-8 md:w-10 bg-[#E1C49C]/45" />
-                      <span
-                        className="text-[0.6rem] sm:text-[0.7rem] md:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-[#E1C49C]"
-                        style={{ textShadow: "0 2px 14px rgba(229,196,156,0.65)" }}
-                      >
-                        {ceremonyTimeDisplay.split(",")[0]}
-                      </span>
-                      <span className="h-[0.5px] flex-1 bg-[#E1C49C]/45" />
-                    </div>
-                  </div>
-
-                  {/* Year */}
-                  <span
-                    className="text-[0.65rem] sm:text-xs md:text-sm uppercase tracking-[0.4em] sm:tracking-[0.5em] text-[#E1C49C]"
-                    style={{ textShadow: "0 2px 14px rgba(229,196,156,0.65)" }}
-                  >
-                    {ceremonyYear}
-                  </span>
-                </div>
-              </div>
-            </div>
       </div>
     </Section>
   )

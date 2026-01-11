@@ -7,19 +7,19 @@ interface HeroProps {
 }
 
 const desktopImages: string[] = [
-  '/images/1st Part/1.webp',
-  '/images/1st Part/2.webp',
-  '/images/1st Part/3.webp',
-  '/images/1st Part/4.webp',
-  '/images/1st Part/5.webp',
+   "/desktop-background/debut (1).webp",
+  "/desktop-background/debut (2).webp",
+  "/desktop-background/debut (3).webp", 
+  "/desktop-background/debut (4).webp",
+  "/desktop-background/debut (5).webp",
 ];
 
 const mobileImages: string[] = [
-  '/images/1st Part/1.webp',
-  '/images/1st Part/2.webp',
-  '/images/1st Part/3.webp',
-  '/images/1st Part/4.webp',
-  '/images/1st Part/5.webp',
+'/mobile-background/debut (1).webp',
+'/mobile-background/debut (2).webp',
+'/mobile-background/debut (3).webp',
+'/mobile-background/debut (4).webp',
+'/mobile-background/debut (2).webp',
 ];
 
 export const Hero: React.FC<HeroProps> = ({ onOpen, visible }) => {
@@ -65,7 +65,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpen, visible }) => {
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(to bottom, rgba(81, 8, 15, 0.7), rgba(117, 26, 35, 0.7))'
+            background: 'linear-gradient(to bottom, rgba(73, 5, 5, 0.7), rgba(73, 5, 5, 0.7))'
           }}
         />
       </div>
@@ -79,8 +79,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpen, visible }) => {
             {/* Monogram Image */}
             <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44">
               <Image
-                src="/monogram/monogram.png"
-                alt="Daniel & Florence Monogram"
+                src="/monogram/debut monogram.png"
+                alt="Debut Monogram"
                 fill
                 className="object-contain"
                 priority
@@ -98,7 +98,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpen, visible }) => {
             style={{
               fontFamily: '"Great Vibes", cursive',
               fontWeight: 400,
-              color: '#E1C49C',
+              color: '#FFE1BE',
             }}
           >
             You are
@@ -109,7 +109,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpen, visible }) => {
             style={{
               fontFamily: '"Cinzel", serif',
               fontWeight: 700,
-              color: '#E1C49C',
+              color: '#FFE1BE',
             }}
           >
             Invited!
@@ -121,19 +121,19 @@ export const Hero: React.FC<HeroProps> = ({ onOpen, visible }) => {
             }}
             className="px-10 py-4 font-serif text-sm tracking-[0.2em] uppercase rounded-sm border transition-all duration-300"
             style={{
-              backgroundColor: '#751A23',
-              borderColor: '#E1C49C',
-              color: '#E1C49C',
+              backgroundColor: '#490505',
+              borderColor: '#FFE1BE',
+              color: '#FFE1BE',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(117, 26, 35, 0.9)';
+              e.currentTarget.style.backgroundColor = 'rgba(73, 5, 5, 0.9)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#751A23';
+              e.currentTarget.style.backgroundColor = '#490505';
             }}
           >
             <span
-              style={{ fontFamily: '"Cinzel", serif', fontWeight: 500, color: '#E1C49C' }}
+              style={{ fontFamily: '"Cinzel", serif', fontWeight: 500, color: '#FFE1BE' }}
             >
               Open Invitation
             </span>

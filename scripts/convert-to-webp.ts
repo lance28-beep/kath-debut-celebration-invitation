@@ -2,7 +2,11 @@ import fs from "fs";
 import path from "path";
 import sharp from "sharp";
 
-const IMAGES_DIR = path.resolve(process.cwd(), "public", "images");
+const IMAGE_DIRS = [
+  path.resolve(process.cwd(), "public", "desktop-background"),
+  path.resolve(process.cwd(), "public", "mobile-background"),
+  path.resolve(process.cwd(), "public", "Details"),
+];
 
 const VALID_INPUT_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".JPG", ".JPEG", ".PNG"]);
 
@@ -50,26 +54,37 @@ function getAllImageFiles(dir: string): string[] {
 }
 
 async function main(): Promise<void> {
-  if (!fs.existsSync(IMAGES_DIR)) {
-    console.error(`Directory not found: ${IMAGES_DIR}`);
+  // Check which directories exist
+  const existingDirs = IMAGE_DIRS.filter(dir => fs.existsSync(dir));
+  
+  if (existingDirs.length === 0) {
+    console.error("None of the target directories were found.");
+    console.error("Expected directories:");
+    IMAGE_DIRS.forEach(dir => console.error(`  - ${dir}`));
     process.exit(1);
   }
 
-  const targets = getAllImageFiles(IMAGES_DIR);
+  // Collect all image files from all directories
+  const allTargets: string[] = [];
+  for (const dir of existingDirs) {
+    const files = getAllImageFiles(dir);
+    allTargets.push(...files);
+  }
 
-  if (targets.length === 0) {
-    console.log("No JPG/PNG images found to convert.");
+  if (allTargets.length === 0) {
+    console.log("No JPG/PNG images found to convert in the specified directories.");
     return;
   }
 
-  console.log(`Found ${targets.length} images in ${IMAGES_DIR} and subdirectories`);
+  console.log(`Found ${allTargets.length} images across ${existingDirs.length} directory/directories`);
+  existingDirs.forEach(dir => console.log(`  - ${dir}`));
   console.log(`Converting to WebP format...\n`);
 
   let converted = 0;
   let skipped = 0;
   let failed = 0;
 
-  for (const file of targets) {
+  for (const file of allTargets) {
     try {
       const outputPath = path.join(
         path.dirname(file),
@@ -93,7 +108,7 @@ async function main(): Promise<void> {
   console.log(`  Converted: ${converted}`);
   console.log(`  Skipped (already exists): ${skipped}`);
   console.log(`  Failed: ${failed}`);
-  console.log(`  Total: ${targets.length}`);
+  console.log(`  Total: ${allTargets.length}`);
 }
 
 main().catch((err) => {

@@ -1,6 +1,17 @@
 import fs from "fs/promises"
 import path from "path"
 import MasonryGallery from "@/components/masonry-gallery"
+import { Great_Vibes, Inter } from "next/font/google"
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: "400",
+})
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+})
 
 // Generate on each request so newly added images in public/ appear without a rebuild
 export const dynamic = "force-dynamic"
@@ -15,8 +26,8 @@ async function getImagesFrom(dir: string) {
       .filter((p) => p.match(/\.(jpe?g|png|webp|gif)$/i))
       .sort((a, b) => {
         // Extract numeric part from filename for proper numerical sorting
-        const numA = parseInt(a.match(/\/(\d+)\./)?.[1] || "0", 10)
-        const numB = parseInt(b.match(/\/(\d+)\./)?.[1] || "0", 10)
+        const numA = parseInt(a.match(/\((\d+)\)/)?.[1] || "0", 10)
+        const numB = parseInt(b.match(/\((\d+)\)/)?.[1] || "0", 10)
         return numA - numB
       })
   } catch {
@@ -25,58 +36,88 @@ async function getImagesFrom(dir: string) {
 }
 
 export default async function GalleryPage() {
-  const galleryImages = await getImagesFrom("images/Gallery")
-  const images = galleryImages.map((src) => ({ src, category: "gallery" as const }))
+  const mobileImages = await getImagesFrom("mobile-background")
+  const desktopImages = await getImagesFrom("desktop-background")
+  
+  const images = [
+    ...mobileImages.map((src) => ({ src, category: "mobile" as const })),
+    ...desktopImages.map((src) => ({ src, category: "desktop" as const })),
+  ]
 
   return (
-    <main className="min-h-screen bg-[#51080F] relative overflow-hidden">
-      {/* Background image */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/Details/newBackground.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+    <main className="min-h-screen bg-[#490505] relative overflow-hidden">
+      {/* Ornate pattern background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+        {/* Base pattern - diagonal lines forming diamonds */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(-45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(135deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px),
+              repeating-linear-gradient(225deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px)
+            `,
+            backgroundSize: '70px 70px, 70px 70px, 35px 35px, 35px 35px',
+          }}
         />
-        {/* Overlay with #751A23 */}
-        <div className="absolute inset-0 bg-[#751A23]/40" />
+        
+        {/* Decorative scroll motifs - using SVG pattern */}
+        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+          <defs>
+            <pattern id="scrollPatternGallery" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+              {/* Scroll motifs at intersections */}
+              <g fill="none" stroke="#FCE1B6" strokeWidth="0.5">
+                {/* Top scroll */}
+                <path d="M 70 0 Q 65 15 70 30 Q 75 15 70 0" />
+                {/* Bottom scroll */}
+                <path d="M 70 140 Q 65 125 70 110 Q 75 125 70 140" />
+                {/* Left scroll */}
+                <path d="M 0 70 Q 15 65 30 70 Q 15 75 0 70" />
+                {/* Right scroll */}
+                <path d="M 140 70 Q 125 65 110 70 Q 125 75 140 70" />
+                {/* Center decorative element */}
+                <path d="M 70 30 Q 60 50 70 70 Q 80 50 70 30" />
+                <path d="M 70 110 Q 60 90 70 70 Q 80 90 70 110" />
+                <path d="M 30 70 Q 50 60 70 70 Q 50 80 30 70" />
+                <path d="M 110 70 Q 90 60 70 70 Q 90 80 110 70" />
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#scrollPatternGallery)" />
+        </svg>
+
+        {/* Subtle overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#490505]/80 via-transparent to-[#490505]/80" />
       </div>
 
       <section className="relative z-10 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-16">
         <div className="text-center mb-6 sm:mb-8 md:mb-10 px-3 sm:px-4">
-          {/* Decorative element above title */}
-          <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-            <div className="w-8 sm:w-12 md:w-16 h-px bg-[#751A23]/60" />
-            <div className="w-1.5 h-1.5 bg-[#A58169]/80 rounded-full" />
-            <div className="w-1.5 h-1.5 bg-[#E1C49C]/80 rounded-full" />
-            <div className="w-1.5 h-1.5 bg-[#751A23]/80 rounded-full" />
-            <div className="w-8 sm:w-12 md:w-16 h-px bg-[#751A23]/60" />
-          </div>
-          
-          <h1
-            className="imperial-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-normal text-[#E1C49C] mb-2 sm:mb-3 md:mb-4 drop-shadow-lg"
-            style={{ textShadow: "0 4px 18px rgba(0,0,0,0.85)" }}
-          >
-            Our Love Story Gallery
-          </h1>
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-[#E1C49C]/90 font-light max-w-xl mx-auto leading-relaxed px-2">
-            Every photograph tells a story of Daniel & Florence's journey to forever
-          </p>
-          
-          {/* Decorative element below subtitle */}
-          <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
-            <div className="w-1.5 h-1.5 bg-[#A58169]/80 rounded-full" />
-            <div className="w-1.5 h-1.5 bg-[#E1C49C]/80 rounded-full" />
-            <div className="w-1.5 h-1.5 bg-[#751A23]/80 rounded-full" />
+          <div className="mx-auto max-w-3xl">
+            <p className={`${inter.className} text-xs sm:text-sm tracking-[0.45em] uppercase text-[#FCE1B6]/75 mb-3`}>
+              Crimson keepsakes
+            </p>
+            <h1
+              className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl text-[#FCE1B6] mb-4`}
+            >
+              Gallery of Gilded Evenings
+            </h1>
+            <p className={`${inter.className} text-sm sm:text-base md:text-lg text-[#FCE1B6]/85 mt-4 leading-relaxed`}>
+              Moments draped in wine red, gold, and black—Kaith's debut glow, framed for you to relive.
+            </p>
           </div>
         </div>
 
         {images.length === 0 ? (
-          <div className="text-center text-[#E1C49C]/90">
+          <div className={`${inter.className} text-center text-[#FCE1B6]/90`}>
             <p className="font-light">
               No images found. Add files to{" "}
-              <code className="px-2 py-1 bg-[#751A23]/80 rounded border border-[#751A23]/30 text-[#E1C49C]">
-                public/images/Gallery
+              <code className="px-2 py-1 bg-[#2E041A]/80 rounded border border-[#FCE1B6]/30 text-[#FCE1B6]">
+                public/mobile-background
+              </code>
+              {" "}or{" "}
+              <code className="px-2 py-1 bg-[#2E041A]/80 rounded border border-[#FCE1B6]/30 text-[#FCE1B6]">
+                public/desktop-background
               </code>
               .
             </p>
@@ -84,11 +125,7 @@ export default async function GalleryPage() {
         ) : (
           <MasonryGallery images={images} />
         )}
-
-
       </section>
     </main>
   )
 }
-
-

@@ -1,250 +1,423 @@
 "use client"
 
 import React from "react"
-import { useEffect, useMemo, useState, useRef } from "react"
-import { Section } from "@/components/section"
-import { Loader2, Users } from "lucide-react"
-import { Cormorant_Garamond } from "next/font/google"
-import { siteConfig } from "@/content/site"
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400"],
-})
+import { useEffect, useMemo, useState } from "react"
+
+import { Section } from "@/components/section"
+
+import { Great_Vibes, Playfair_Display, Inter } from "next/font/google"
+
+
+
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" })
+
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600"] })
+
+const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600"] })
+
+
 
 interface PrincipalSponsor {
+
   MalePrincipalSponsor: string
+
   FemalePrincipalSponsor: string
+
 }
 
+
+
 export function PrincipalSponsors() {
-  const [isVisible, setIsVisible] = useState(false)
-  const sectionRef = useRef<HTMLDivElement>(null)
 
-  // Helper component for elegant section titles
   const SectionTitle = ({
+
     children,
+
     align = "center",
+
     className = "",
+
   }: {
+
     children: React.ReactNode
+
     align?: "left" | "center" | "right"
+
     className?: string
+
   }) => {
+
     const textAlign =
+
       align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
+
     return (
+
       <h3
-        className={`relative ${cormorant.className} text-xs sm:text-sm md:text-base lg:text-lg font-semibold uppercase text-[#51080F] mb-1.5 sm:mb-2 md:mb-3 tracking-[0.1em] sm:tracking-[0.15em] ${textAlign} ${className} transition-all duration-300`}
+
+        className={`${playfair.className} text-xs sm:text-sm md:text-base tracking-[0.45em] uppercase text-[#FCE1B6] mb-2 sm:mb-3 md:mb-4 ${textAlign} ${className}`}
+
       >
+
         {children}
+
       </h3>
+
     )
+
   }
 
-  // Helper component for name items with alignment
-  const NameItem = ({ name, align = "center" }: { name: string, align?: "left" | "center" | "right" }) => {
+
+
+  const NameItem = ({ name, align = "center" }: { name: string; align?: "left" | "center" | "right" }) => {
+
     const containerAlign =
-      align === "right" ? "items-end" : align === "left" ? "items-start" : "items-center"
-    const textAlign =
-      align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
-    return (
-      <div
-        className={`relative flex flex-col ${containerAlign} justify-center py-1 sm:py-1.5 md:py-2.5 w-full group/item transition-all duration-300 hover:scale-[1.02] sm:hover:scale-[1.03]`}
-      >
-        {/* Hover highlight effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#751A23]/18 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 rounded-md" />
 
-        <p
-          className={`relative text-[#51080F] text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-semibold leading-snug break-words ${textAlign} group-hover/item:text-[#751A23] transition-all duration-300`}
-        >
+      align === "right" ? "items-end" : align === "left" ? "items-start" : "items-center"
+
+    const textAlign =
+
+      align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
+
+    return (
+
+      <div className={`flex flex-col ${containerAlign} justify-center py-1.5 sm:py-2 md:py-2.5 w-full`}>
+
+        <p className={`${inter.className} text-[13px] sm:text-sm md:text-base font-medium text-[#FCE1B6] leading-snug break-words ${textAlign}`}>
+
           {name}
+
         </p>
+
       </div>
+
     )
+
   }
 
-  // Remote data state
+
+
   const [sponsors, setSponsors] = useState<PrincipalSponsor[]>([])
+
   const [isLoading, setIsLoading] = useState(true)
+
   const [error, setError] = useState<string | null>(null)
 
+
+
   const fetchSponsors = async () => {
+
     setIsLoading(true)
+
     try {
+
       const res = await fetch("/api/principal-sponsor", { cache: "no-store" })
+
       if (!res.ok) throw new Error("Failed to load principal sponsors")
+
       const data: PrincipalSponsor[] = await res.json()
+
       setSponsors(data)
+
     } catch (e: any) {
+
       console.error(e)
+
       setError(e?.message || "Failed to load principal sponsors")
+
     } finally {
+
       setIsLoading(false)
+
     }
+
   }
 
+
+
   useEffect(() => {
+
     fetchSponsors()
+
   }, [])
 
-  // Intersection Observer for scroll animations
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 }
-    )
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
 
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current)
-      }
-    }
-  }, [])
+  const sponsorPairs = useMemo(
 
-  // Keep sponsors as pairs to ensure alignment
-  const sponsorPairs = useMemo(() => 
-    sponsors.filter(s => s.MalePrincipalSponsor || s.FemalePrincipalSponsor),
+    () => sponsors.filter((s) => s.MalePrincipalSponsor || s.FemalePrincipalSponsor),
+
     [sponsors]
+
   )
 
-  const { groomNickname, brideNickname } = siteConfig.couple
+
 
   return (
-    <div ref={sectionRef}>
-      <Section
-        id="sponsors"
-        className="relative py-12 md:py-16 lg:py-20 overflow-hidden bg-[#51080F]"
-      >
-        {/* Background image - matching gallery */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <img
-            src="/Details/newBackground.jpg"
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover opacity-30"
-          />
-          {/* Overlay with #751A23 */}
-          <div className="absolute inset-0 bg-[#751A23]/40" />
-        </div>
 
-        {/* Section Header */}
-        <div
-          className={`relative z-30 text-center mb-6 sm:mb-9 md:mb-12 px-3 sm:px-4 transition-all duration-1000 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-10"
-          }`}
-        >
-          {/* Small label */}
-          <p
-            className={`${cormorant.className} text-[0.7rem] sm:text-xs md:text-sm uppercase tracking-[0.28em] text-[#E1C49C] mb-2`}
-            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}
-          >
-            Our Beloved Principal Sponsors
-          </p>
+    <Section
 
-          <h2
-            className="style-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#E1C49C] mb-1.5 sm:mb-3 md:mb-4"
-            style={{ textShadow: "0 4px 18px rgba(0,0,0,0.9)" }}
-          >
-            Standing with {groomNickname} &amp; {brideNickname}
-          </h2>
+      id="sponsors"
 
-          {/* Sublabel/Description */}
-          <p className={`${cormorant.className} text-xs sm:text-sm md:text-base text-[#E1C49C]/95 max-w-2xl mx-auto leading-relaxed px-2 mt-2 mb-3`}>
-            We are deeply honored to have these wonderful couples as our principal sponsors, who serve as witnesses to our union and guides in our journey together. Their presence and support make our special day even more meaningful.
-          </p>
+      className="relative bg-[#490505] py-16 sm:py-20 md:py-24 lg:py-28 overflow-hidden"
 
-          {/* Simple divider */}
-          <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
-            <div className="w-8 sm:w-12 md:w-16 h-px bg-gradient-to-r from-transparent via-[#751A23]/80 to-transparent" />
-            <div className="w-1.5 h-1.5 rounded-full bg-[#E1C49C]/80" />
-            <div className="w-8 sm:w-12 md:w-16 h-px bg-gradient-to-l from-transparent via-[#751A23]/80 to-transparent" />
-          </div>
-        </div>
+    >
 
-        {/* Sponsors content */}
-        <div
-          className={`relative z-30 max-w-4xl mx-auto transition-all duration-1000 delay-300 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          {/* Card with theme matching site */}
-          <div className="relative bg-[#EDE1D3]/95 backdrop-blur-md rounded-xl sm:rounded-2xl overflow-hidden border border-[#751A23]/60 shadow-[0_20px_60px_rgba(117,26,35,0.35)] transition-all duration-500 group">
-            {/* Card content */}
-            <div className="relative py-3 sm:py-6 md:py-8 z-10">
-              <div className="relative z-10 w-full">
-              {isLoading ? (
-                <div className="flex items-center justify-center py-24 sm:py-28 md:py-32">
-                  <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 animate-spin text-[#751A23]/70" />
-                    <span className="text-[#51080F]/80 font-serif text-base sm:text-lg">Loading sponsors...</span>
-                  </div>
-                </div>
-              ) : error ? (
-                <div className="flex items-center justify-center py-24 sm:py-28 md:py-32">
-                  <div className="text-center">
-                    <p className="text-[#751A23] font-serif text-base sm:text-lg mb-3">{error}</p>
-                    <button
-                      onClick={fetchSponsors}
-                      className="text-[#51080F]/90 hover:text-[#51080F] font-serif underline transition-colors duration-200"
-                    >
-                      Try again
-                    </button>
-                  </div>
-                </div>
-              ) : sponsorPairs.length === 0 ? (
-                <div className="text-center py-24 sm:py-28 md:py-32">
-                  <Users className="h-14 w-14 sm:h-16 sm:w-16 text-[#751A23]/40 mx-auto mb-4" />
-                  <p className="text-[#51080F]/75 font-serif text-base sm:text-lg">No sponsors yet</p>
-                </div>
-              ) : (
-                <div className="mb-3 sm:mb-4 md:mb-6 lg:mb-8 space-y-6 sm:space-y-8">
-                  {/* Principal Sponsors grid */}
-                  <div>
-                    <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-1.5 sm:gap-x-2 md:gap-x-3 mb-1.5 sm:mb-2 md:mb-3">
-                      <SectionTitle align="right" className="pr-2 sm:pr-3 md:pr-4">
-                        Male Principal Sponsors
-                      </SectionTitle>
-                      <SectionTitle align="left" className="pl-2 sm:pl-3 md:pl-4">
-                        Female Principal Sponsors
-                      </SectionTitle>
-                    </div>
-                    <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-1.5 sm:gap-x-2 md:gap-x-3 gap-y-1 sm:gap-y-1.5 md:gap-y-2 items-stretch">
-                      {sponsorPairs.map((pair, idx) => (
-                        <React.Fragment key={`pair-${idx}-${pair.MalePrincipalSponsor || 'empty'}-${pair.FemalePrincipalSponsor || 'empty'}`}>
-                          <div className="px-2 sm:px-3 md:px-4">
-                            {pair.MalePrincipalSponsor ? (
-                              <NameItem name={pair.MalePrincipalSponsor} align="right" />
-                            ) : (
-                              <div className="py-0.5 sm:py-1 md:py-1.5" />
-                            )}
-                          </div>
-                          <div className="px-2 sm:px-3 md:px-4">
-                            {pair.FemalePrincipalSponsor ? (
-                              <NameItem name={pair.FemalePrincipalSponsor} align="left" />
-                            ) : (
-                              <div className="py-0.5 sm:py-1 md:py-1.5" />
-                            )}
-                          </div>
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      {/* Ornate pattern background - matching Countdown section */}
+
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+
+        {/* Base pattern - diagonal lines forming diamonds */}
+
+        <div 
+
+          className="absolute inset-0"
+
+          style={{
+
+            backgroundImage: `
+
+              repeating-linear-gradient(45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+
+              repeating-linear-gradient(-45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+
+              repeating-linear-gradient(135deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px),
+
+              repeating-linear-gradient(225deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px)
+
+            `,
+
+            backgroundSize: '70px 70px, 70px 70px, 35px 35px, 35px 35px',
+
+          }}
+
+        />
+
+        
+
+        {/* Decorative scroll motifs - using SVG pattern */}
+
+        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+
+          <defs>
+
+            <pattern id="sponsorScrollPattern" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+
+              {/* Scroll motifs at intersections */}
+
+              <g fill="none" stroke="#FCE1B6" strokeWidth="0.5">
+
+                {/* Top scroll */}
+
+                <path d="M 70 0 Q 65 15 70 30 Q 75 15 70 0" />
+
+                {/* Bottom scroll */}
+
+                <path d="M 70 140 Q 65 125 70 110 Q 75 125 70 140" />
+
+                {/* Left scroll */}
+
+                <path d="M 0 70 Q 15 65 30 70 Q 15 75 0 70" />
+
+                {/* Right scroll */}
+
+                <path d="M 140 70 Q 125 65 110 70 Q 125 75 140 70" />
+
+                {/* Center decorative element */}
+
+                <path d="M 70 30 Q 60 50 70 70 Q 80 50 70 30" />
+
+                <path d="M 70 110 Q 60 90 70 70 Q 80 90 70 110" />
+
+                <path d="M 30 70 Q 50 60 70 70 Q 50 80 30 70" />
+
+                <path d="M 110 70 Q 90 60 70 70 Q 90 80 110 70" />
+
+              </g>
+
+            </pattern>
+
+          </defs>
+
+          <rect width="100%" height="100%" fill="url(#sponsorScrollPattern)" />
+
+        </svg>
+
+
+
+        {/* Subtle overlay for depth */}
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#490505]/80 via-transparent to-[#490505]/80" />
+
       </div>
-      </Section>
-    </div>
+
+
+
+      <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-16 px-4">
+
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#FCE1B6]/20 bg-[#FCE1B6]/10 px-5 py-2 text-[10px] sm:text-xs tracking-[0.48em] uppercase text-[#FCE1B6]/85">
+
+          Principal Sponsors
+
+        </div>
+
+        <h2
+
+          className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#FCE1B6] drop-shadow-[0_18px_48px_rgba(73,5,5,0.65)] mt-4`}
+
+        >
+
+          Guardians of Grace
+
+        </h2>
+
+        <p className={`${inter.className} text-xs sm:text-sm md:text-base text-[#FCE1B6]/85 max-w-2xl mx-auto mt-4 leading-relaxed`}>
+
+          Honoring the distinguished mentors and godparents who have guided Kaith's journey. Their wisdom, love, and blessings illuminate her path as she steps into womanhood on this momentous eighteenth year.
+
+        </p>
+
+      </div>
+
+
+
+      <div className="relative z-10 max-w-5xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+
+        <div className="relative bg-[#490505]/80 backdrop-blur-2xl border border-[#FCE1B6]/20 rounded-xl sm:rounded-2xl shadow-[0_25px_80px_rgba(73,5,5,0.45)] overflow-hidden">
+
+          <div className="absolute inset-[10px] sm:inset-[14px] md:inset-[18px] border border-[#FCE1B6]/15 rounded-lg sm:rounded-xl pointer-events-none" />
+
+
+
+          <div className="relative p-5 sm:p-7 md:p-9 lg:p-12">
+
+            {isLoading ? (
+
+              <div className="flex items-center justify-center py-24">
+
+                <div className="flex flex-col items-center gap-4">
+
+                  <div className="w-12 h-12 border-4 border-[#FCE1B6]/20 border-t-[#FCE1B6]/70 rounded-full animate-spin" />
+
+                  <span className={`${inter.className} text-[#FCE1B6]/80 text-lg`}>
+
+                    Gathering her sponsors…
+
+                  </span>
+
+                </div>
+
+              </div>
+
+            ) : error ? (
+
+              <div className="flex items-center justify-center py-24">
+
+                <div className="text-center">
+
+                  <p className={`${inter.className} text-red-400 text-lg mb-2`}>{error}</p>
+
+                  <button
+
+                    onClick={fetchSponsors}
+
+                    className={`${playfair.className} text-[#FCE1B6] hover:text-[#FCE1B6]/70 transition-colors underline`}
+
+                  >
+
+                    Try again
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            ) : sponsorPairs.length === 0 ? (
+
+              <div className="text-center py-24">
+
+                <p className={`${inter.className} text-[#FCE1B6]/70 text-lg`}>
+
+                  Her sponsors will be announced soon.
+
+                </p>
+
+              </div>
+
+            ) : (
+
+              <div className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
+
+                <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-4 md:gap-x-6 mb-3 sm:mb-4">
+
+                  <SectionTitle align="right" className="pr-3 sm:pr-4 md:pr-6">
+
+                    Gentlemen of Honor
+
+                  </SectionTitle>
+
+                  <SectionTitle align="left" className="pl-3 sm:pl-4 md:pl-6">
+
+                    Ladies of Grace
+
+                  </SectionTitle>
+
+                </div>
+
+                <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-4 md:gap-x-6 gap-y-2 sm:gap-y-3 md:gap-y-4 items-stretch">
+
+                  {sponsorPairs.map((pair, idx) => (
+
+                    <React.Fragment key={`pair-${idx}`}>
+
+                      <div className="px-3 sm:px-4 md:px-6">
+
+                        {pair.MalePrincipalSponsor ? (
+
+                          <NameItem name={pair.MalePrincipalSponsor} align="right" />
+
+                        ) : (
+
+                          <div className="py-2" />
+
+                        )}
+
+                      </div>
+
+                      <div className="px-3 sm:px-4 md:px-6">
+
+                        {pair.FemalePrincipalSponsor ? (
+
+                          <NameItem name={pair.FemalePrincipalSponsor} align="left" />
+
+                        ) : (
+
+                          <div className="py-2" />
+
+                        )}
+
+                      </div>
+
+                    </React.Fragment>
+
+                  ))}
+
+                </div>
+
+              </div>
+
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </Section>
+
   )
+
 }

@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from "react"
 import { Heart, RefreshCw, TrendingUp, Mail, Users, MapPin, Calendar, Crown } from "lucide-react"
-import { Cormorant_Garamond } from "next/font/google"
+import { Great_Vibes, Inter } from "next/font/google"
 
-const cormorant = Cormorant_Garamond({
+const greatVibes = Great_Vibes({
   subsets: ["latin"],
-  weight: ["400"],
+  weight: "400",
+})
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
 })
 
 interface Guest {
@@ -134,47 +139,69 @@ export function BookOfGuests() {
   return (
     <div
       id="guests"
-      className="relative z-10 bg-[#751A23] py-4 sm:py-8 md:py-12 lg:py-16 overflow-hidden isolate"
+      className="relative z-10 bg-[#490505] py-14 sm:py-18 md:py-20 lg:py-24 overflow-hidden"
     >
-      {/* Background image - matching gallery */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/Details/newBackground.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+      {/* Ornate pattern background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+        {/* Base pattern - diagonal lines forming diamonds */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(-45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(135deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px),
+              repeating-linear-gradient(225deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px)
+            `,
+            backgroundSize: '70px 70px, 70px 70px, 35px 35px, 35px 35px',
+          }}
         />
+        
+        {/* Decorative scroll motifs - using SVG pattern */}
+        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+          <defs>
+            <pattern id="scrollPatternBookOfGuests" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+              {/* Scroll motifs at intersections */}
+              <g fill="none" stroke="#FCE1B6" strokeWidth="0.5">
+                {/* Top scroll */}
+                <path d="M 70 0 Q 65 15 70 30 Q 75 15 70 0" />
+                {/* Bottom scroll */}
+                <path d="M 70 140 Q 65 125 70 110 Q 75 125 70 140" />
+                {/* Left scroll */}
+                <path d="M 0 70 Q 15 65 30 70 Q 15 75 0 70" />
+                {/* Right scroll */}
+                <path d="M 140 70 Q 125 65 110 70 Q 125 75 140 70" />
+                {/* Center decorative element */}
+                <path d="M 70 30 Q 60 50 70 70 Q 80 50 70 30" />
+                <path d="M 70 110 Q 60 90 70 70 Q 80 90 70 110" />
+                <path d="M 30 70 Q 50 60 70 70 Q 50 80 30 70" />
+                <path d="M 110 70 Q 90 60 70 70 Q 90 80 110 70" />
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#scrollPatternBookOfGuests)" />
+        </svg>
+
+        {/* Subtle overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#490505]/80 via-transparent to-[#490505]/80" />
       </div>
 
       {/* Section Header - More Compact */}
-      <div className="relative z-10 text-center mb-3 sm:mb-4 md:mb-6 px-2 sm:px-3 md:px-4">
+      <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-16 px-4">
         {/* Small label */}
-        <p
-          className={`${cormorant.className} text-[0.6rem] sm:text-[0.7rem] md:text-xs uppercase tracking-[0.25em] text-white/90 mb-1 sm:mb-1.5`}
-          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.85)" }}
-        >
-          Our Cherished Guests
+        <p className={`${inter.className} text-xs sm:text-sm tracking-[0.45em] uppercase text-[#FCE1B6]/75 mb-3`}>
+          Honored Attendees
         </p>
 
         <h2
-          className="style-script-regular text-xl sm:text-3xl md:text-4xl lg:text-5xl text-white mb-1 sm:mb-2 md:mb-3"
-          style={{ textShadow: "0 4px 18px rgba(0,0,0,0.9)" }}
+          className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl text-[#FCE1B6] mb-4 drop-shadow-[0_18px_48px_rgba(46,4,26,0.65)]`}
         >
           Book of Guests
         </h2>
 
-        <p className={`${cormorant.className} text-[10px] sm:text-xs md:text-sm text-white/90 font-light max-w-lg mx-auto leading-relaxed px-2`}>
-          Meet the cherished souls joining us in celebration — your presence makes our day truly special
+        <p className={`${inter.className} text-sm sm:text-base md:text-lg text-[#FCE1B6]/85 max-w-2xl mx-auto mt-4 leading-relaxed`}>
+          Meet the cherished souls joining us for Kaith's debut celebration—your presence makes this evening truly special.
         </p>
-
-        {/* Decorative element - Smaller */}
-        <div className="flex items-center justify-center gap-1 sm:gap-1.5 mt-1.5 sm:mt-2.5 md:mt-3">
-          <div className="w-6 sm:w-10 md:w-12 h-px bg-gradient-to-r from-transparent via-[#327B72]/80 to-transparent" />
-          <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-[#327B72]/90 rounded-full" />
-          <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-white/85 rounded-full" />
-          <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-[#327B72]/90 rounded-full" />
-          <div className="w-6 sm:w-10 md:w-12 h-px bg-gradient-to-l from-transparent via-[#327B72]/80 to-transparent" />
-        </div>
       </div>
 
       {/* Guests content */}
@@ -182,7 +209,7 @@ export function BookOfGuests() {
         {/* Stats card - Simplified */}
         <div className="text-center mb-2.5 sm:mb-4 md:mb-6 px-2 sm:px-4 md:px-6">
           <div className="relative max-w-3xl mx-auto">
-            <div className="relative bg-white/95 backdrop-blur-md border border-[#327B72]/40 rounded-lg sm:rounded-xl p-3 sm:p-5 md:p-6 shadow-md">
+            <div className="relative bg-[#FCE1B6]/95 backdrop-blur-md border border-[#FCE1B6]/40 rounded-lg sm:rounded-xl p-3 sm:p-5 md:p-6 shadow-md">
               
               {/* Refresh button */}
               <button
@@ -197,26 +224,26 @@ export function BookOfGuests() {
               {/* Main Count with inline text */}
               <div className="mb-1.5 sm:mb-2.5">
                 <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-                  <h3 className={`${cormorant.className} text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 transition-all duration-500 ${showIncrease ? 'scale-110 text-green-600' : ''}`}>
+                  <h3 className={`${inter.className} text-xl sm:text-3xl md:text-4xl font-bold text-[#490505] transition-all duration-500 ${showIncrease ? 'scale-110 text-green-600' : ''}`}>
                     {totalGuests}
                   </h3>
                   {showIncrease && (
                     <TrendingUp className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-green-600 animate-bounce" />
                   )}
-                  <p className={`${cormorant.className} text-sm sm:text-lg md:text-xl text-gray-700 font-medium leading-tight`}>
-                    {totalGuests === 1 ? "Guest" : "Guests"} Celebrating With Us
+                  <p className={`${inter.className} text-sm sm:text-lg md:text-xl text-[#490505] font-medium leading-tight`}>
+                    {totalGuests === 1 ? "Guest" : "Guests"} Celebrating With Kaith
                   </p>
                 </div>
               </div>
 
               {/* RSVP Count */}
-              <p className={`${cormorant.className} text-xs sm:text-base text-gray-600 mb-2 sm:mb-3`}>
+              <p className={`${inter.className} text-xs sm:text-base text-[#490505]/80 mb-2 sm:mb-3`}>
                 {rsvpCount} {rsvpCount === 1 ? "RSVP entry" : "RSVP entries"}
               </p>
               
               {/* Message */}
-              <p className={`${cormorant.className} text-[10px] sm:text-xs md:text-sm text-gray-600 leading-tight`}>
-                Thank you for confirming your RSVP! Your presence means the world to us.
+              <p className={`${inter.className} text-[10px] sm:text-xs md:text-sm text-[#490505]/80 leading-tight`}>
+                Thank you for confirming your RSVP! Your presence means the world to Kaith.
               </p>
             </div>
           </div>

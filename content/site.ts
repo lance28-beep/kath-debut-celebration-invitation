@@ -8,7 +8,7 @@ export const siteConfig = {
   wedding: {
     date: "FEB 8, 2026",
     time: "4PM",
-    venue: "CASA ANTONIA, MANGALDAN, PANGASINAN",
+    venue: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
     tagline: "are getting married!",
     theme: "Purple & Sage Motif",
     motif: "#6A4F82, #B9AACB, #A8AF8D, #F4F4F4, #5B6B3C",
@@ -19,8 +19,8 @@ export const siteConfig = {
     },
   },
   ceremony: {
-    location: "CASA ANTONIA, MANGALDAN, PANGASINAN",
-    venue: "CASA ANTONIA, MANGALDAN, PANGASINAN",
+    location: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
+    venue: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
     date: "February 8 2026",
     day: "Sunday",
     time: "4:00PM",
@@ -28,8 +28,8 @@ export const siteConfig = {
     guestsTime: "3:30 PM",
   },
   reception: {
-    location: "CASA ANTONIA, MANGALDAN, PANGASINAN",
-    venue: "CASA ANTONIA, MANGALDAN, PANGASINAN",
+    location: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
+    venue: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
     date: "FEB 8, 2026",
     time: "Reception to follow",
   },

@@ -2,83 +2,16 @@
 
 import { Section } from "@/components/section"
 import { siteConfig } from "@/content/site"
-import {
-  Clock,
-  Utensils,
-  Copy,
-  Check,
-  Navigation,
-  Heart,
-  Camera,
-  X,
-  MapPin,
-} from "lucide-react"
-import { useState, useEffect } from "react"
+import { Clock, PartyPopper, MapPin, Navigation, Copy, Check, Palette, Car, Sparkles } from "lucide-react"
+import { useState } from "react"
 import Image from "next/image"
-import { Cormorant_Garamond } from "next/font/google"
+import { Great_Vibes, Inter } from "next/font/google"
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400"],
-})
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" })
+const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600"] })
 
 export function Details() {
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set())
-  const [showImageModal, setShowImageModal] = useState<string | null>(null)
-  
-  // Convert address to title case for display
-  const formatAddress = (address: string) => {
-    return address
-      .split(',')
-      .map(part => 
-        part.trim()
-          .split(' ')
-          .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-          .join(' ')
-      )
-      .join(', ')
-  }
-  
-  const ceremonyLocation = siteConfig.ceremony.location
-  const receptionLocation = siteConfig.reception.location
-  const ceremonyLocationFormatted = formatAddress(ceremonyLocation)
-  const receptionLocationFormatted = formatAddress(receptionLocation)
-  
-  // Format date with comma: "February 8 2026" -> "February 8, 2026"
-  const formattedCeremonyDate = siteConfig.ceremony.date.replace(/(\w+ \d+) (\d+)/, "$1, $2")
-  
-  // Format reception date: "FEB 8, 2026" -> "February 8, 2026"
-  const formattedReceptionDate = siteConfig.reception.date
-    .replace(/FEB/i, "February")
-    .replace(/JAN/i, "January")
-    .replace(/MAR/i, "March")
-    .replace(/APR/i, "April")
-    .replace(/MAY/i, "May")
-    .replace(/JUN/i, "June")
-    .replace(/JUL/i, "July")
-    .replace(/AUG/i, "August")
-    .replace(/SEP/i, "September")
-    .replace(/OCT/i, "October")
-    .replace(/NOV/i, "November")
-    .replace(/DEC/i, "December")
-
-  // Handle ESC key to close modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && showImageModal) {
-        setShowImageModal(null)
-      }
-    }
-
-    if (showImageModal) {
-      document.addEventListener("keydown", handleEscape)
-      document.body.style.overflow = "hidden"
-    }
-    return () => {
-      document.removeEventListener("keydown", handleEscape)
-      document.body.style.overflow = "unset"
-    }
-  }, [showImageModal])
 
   const copyToClipboard = async (text: string, itemId: string) => {
     try {
@@ -86,391 +19,234 @@ export function Details() {
       setCopiedItems((prev) => new Set(prev).add(itemId))
       setTimeout(() => {
         setCopiedItems((prev) => {
-          const newSet = new Set(prev)
-          newSet.delete(itemId)
-          return newSet
+          const updated = new Set(prev)
+          updated.delete(itemId)
+          return updated
         })
-      }, 2000)
-    } catch (err) {
-      console.error("Failed to copy text: ", err)
+      }, 1800)
+    } catch (error) {
+      console.error("Failed to copy text:", error)
     }
   }
 
-  // Generate Google Maps links
-  const ceremonyMapsLink = `https://maps.google.com/?q=${encodeURIComponent(siteConfig.ceremony.location)}`
-  const receptionMapsLink = `https://maps.google.com/?q=${encodeURIComponent(siteConfig.reception.location)}`
+  const { ceremony, reception } = siteConfig
+  const venue = ceremony.location
+  const entourageCall = ceremony.entourageTime
+  const guestsCall = ceremony.guestsTime
+  const mapsLink = `https://maps.google.com/?q=${encodeURIComponent(venue)}`
 
-  const openInMaps = (link: string) => {
-    window.open(link, "_blank", "noopener,noreferrer")
+  const openInMaps = () => {
+    window.open(mapsLink, "_blank", "noopener,noreferrer")
   }
 
+  const schedule = [
+    { label: "Ceremony Begins", value: ceremony.time },
+    { label: "Reception Follows", value: reception.time },
+    entourageCall && { label: "Entourage Call Time", value: entourageCall },
+    guestsCall && { label: "Guest Doors Open", value: guestsCall },
+  ].filter(Boolean) as { label: string; value: string }[]
+
   return (
-    <Section
-      id="details"
-      className="relative py-12 md:py-16 lg:py-20 overflow-hidden bg-[#51080F]"
-    >
-      {/* Background image - same as gallery */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/Details/newBackground.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+    <Section id="details" className="relative overflow-hidden py-14 sm:py-18 md:py-20 lg:py-24 bg-[#490505]">
+      {/* Ornate pattern background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+        {/* Base pattern - diagonal lines forming diamonds */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(-45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(135deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px),
+              repeating-linear-gradient(225deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px)
+            `,
+            backgroundSize: '70px 70px, 70px 70px, 35px 35px, 35px 35px',
+          }}
         />
-        {/* Overlay with #751A23 */}
-        <div className="absolute inset-0 bg-[#751A23]/40" />
+        
+        {/* Decorative scroll motifs - using SVG pattern */}
+        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+          <defs>
+            <pattern id="scrollPatternDetails" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+              {/* Scroll motifs at intersections */}
+              <g fill="none" stroke="#FCE1B6" strokeWidth="0.5">
+                {/* Top scroll */}
+                <path d="M 70 0 Q 65 15 70 30 Q 75 15 70 0" />
+                {/* Bottom scroll */}
+                <path d="M 70 140 Q 65 125 70 110 Q 75 125 70 140" />
+                {/* Left scroll */}
+                <path d="M 0 70 Q 15 65 30 70 Q 15 75 0 70" />
+                {/* Right scroll */}
+                <path d="M 140 70 Q 125 65 110 70 Q 125 75 140 70" />
+                {/* Center decorative element */}
+                <path d="M 70 30 Q 60 50 70 70 Q 80 50 70 30" />
+                <path d="M 70 110 Q 60 90 70 70 Q 80 90 70 110" />
+                <path d="M 30 70 Q 50 60 70 70 Q 50 80 30 70" />
+                <path d="M 110 70 Q 90 60 70 70 Q 90 80 110 70" />
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#scrollPatternDetails)" />
+        </svg>
+
+        {/* Subtle overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#490505]/80 via-transparent to-[#490505]/80" />
       </div>
 
-      {/* Header */}
-      <div className="relative z-30 text-center mb-6 sm:mb-9 md:mb-12 px-3 sm:px-4">
-        {/* Small label */}
-        <p
-          className={`${cormorant.className} text-[0.7rem] sm:text-xs md:text-sm uppercase tracking-[0.28em] text-white mb-2`}
-          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.75)" }}
-        >
-          Ceremony & Reception Details
-        </p>
-
-        <h2
-          className="style-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-1.5 sm:mb-3 md:mb-4"
-          style={{ textShadow: "0 4px 18px rgba(0,0,0,0.9)" }}
-        >
-          Details
-        </h2>
-
-        <p className={`${cormorant.className} text-xs sm:text-sm md:text-base text-white/90 font-light max-w-xl mx-auto leading-relaxed px-2 mb-2 sm:mb-3`}>
-          All the important details to help you join us in celebrating our special day
-        </p>
-        <p className={`${cormorant.className} text-[0.65rem] sm:text-xs md:text-sm text-white/80 font-light max-w-xl mx-auto leading-relaxed px-2 mb-2 sm:mb-3`}>
-          RSVP Deadline: {siteConfig.details.rsvp.deadline}
-        </p>
-
-        {/* Decorative element below subtitle - matching gallery style */}
-        <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-[#751A23]/60" />
-          <div className="w-1.5 h-1.5 bg-[#A58169]/80 rounded-full" />
-          <div className="w-1.5 h-1.5 bg-[#E1C49C]/80 rounded-full" />
-          <div className="w-1.5 h-1.5 bg-[#751A23]/80 rounded-full" />
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-[#751A23]/60" />
-        </div>
-      </div>
-
-      {/* Ceremony & Reception Locations (combined container) */}
-      <div className="relative z-10 mb-4 sm:mb-8 max-w-6xl mx-auto px-3 sm:px-5">
-        <div className="overflow-hidden rounded-xl sm:rounded-2xl border border-[#751A23]/40 bg-gradient-to-b shadow-[0_20px_60px_rgba(0,0,0,0.45)] transition-transform duration-500 group hover:scale-[1.01]">
-          {/* Combined image */}
-          <div className="relative h-64 sm:h-80 md:h-96 w-full">
-            <Image
-              src="/Details/CasaAntonia.png"
-              alt={ceremonyLocationFormatted}
-              fill
-              className="object-cover"
-              sizes="100vw"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#751A23]/95 via-[#751A23]/65 to-transparent" />
-            <div className="absolute inset-0 flex flex-col justify-end px-3 sm:px-6 pb-3 sm:pb-6 text-white">
-              <p className="style-script-regular text-xl sm:text-2xl md:text-3xl font-normal leading-none drop-shadow-md mb-2">
-                Ceremony & Reception
-              </p>
-            </div>
+      <div className="relative max-w-6xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-16 px-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-[10px] sm:text-xs tracking-[0.48em] uppercase text-[#FCE1B6]/85">
+            Event Details
           </div>
-
-          {/* Details panel - Combined */}
-          <div className="bg-[#E1C49C]/95 text-[#51080F] px-3 sm:px-6 py-4 sm:py-6 space-y-4 backdrop-blur-sm">
-            {/* Address */}
-            <div className="text-left pb-3 border-b border-[#751A23]/30">
-              <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.18em] text-[#751A23] uppercase mb-1">
-                Location
-              </p>
-              <p className="text-sm sm:text-base md:text-lg font-medium text-[#51080F]">
-                {ceremonyLocationFormatted}
-              </p>
-            </div>
-
-            {/* Ceremony Details */}
-            <div className="space-y-2.5">
-              <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.18em] text-[#751A23] uppercase">
-                Ceremony
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 text-left">
-                <div className="rounded-md border border-[#751A23] bg-white/80 px-2.5 py-2 shadow-sm">
-                  <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.18em] text-[#751A23] uppercase mb-0.5">
-                    Date
-                  </p>
-                  <p className="text-sm sm:text-base font-bold text-[#51080F]">{formattedCeremonyDate}</p>
-                </div>
-                <div className="rounded-md border border-[#751A23] bg-white/80 px-2.5 py-2 shadow-sm">
-                  <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.18em] text-[#751A23] uppercase mb-0.5">
-                    Time
-                  </p>
-                  <p className="text-sm sm:text-base font-bold text-[#51080F]">{siteConfig.ceremony.time}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Reception Details */}
-            <div className="space-y-2.5 pt-2 border-t border-[#751A23]/30">
-              <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.18em] text-[#751A23] uppercase">
-                Reception
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 text-left">
-                <div className="rounded-md border border-[#751A23] bg-white/80 px-2.5 py-2 shadow-sm">
-                  <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.18em] text-[#751A23] uppercase mb-0.5">
-                    Date
-                  </p>
-                  <p className="text-sm sm:text-base font-bold text-[#51080F]">{formattedReceptionDate}</p>
-                </div>
-                <div className="rounded-md border border-[#751A23] bg-white/80 px-2.5 py-2 shadow-sm">
-                  <p className="text-[9px] sm:text-[10px] font-semibold tracking-[0.18em] text-[#751A23] uppercase mb-0.5">
-                    Time
-                  </p>
-                  <p className="text-sm sm:text-base font-bold text-[#51080F]">{siteConfig.reception.time}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-3 pt-2">
-              <button
-                onClick={() => openInMaps(ceremonyMapsLink)}
-                className="flex items-center justify-center gap-1.5 rounded-lg bg-[#751A23] text-white py-2.5 sm:py-3 shadow-lg hover:translate-y-[-2px] hover:bg-[#751A23]/90 transition-all text-xs sm:text-sm font-semibold"
-              >
-                <Navigation className="w-4 h-4" />
-                Get Directions
-              </button>
-              <button
-                onClick={() => copyToClipboard(ceremonyLocation, "ceremony-reception")}
-                className="flex items-center justify-center gap-1.5 rounded-lg border border-[#751A23]/35 text-[#51080F] py-2.5 sm:py-3 hover:bg-[#751A23]/5 transition-all text-xs sm:text-sm font-semibold"
-              >
-                {copiedItems.has("ceremony-reception") ? (
-                  <>
-                    <Check className="w-4 h-4" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    Copy Address
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Enhanced Image Modal */}
-      {showImageModal && (
-        <div
-          className="fixed inset-0 backdrop-blur-xl z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 animate-in fade-in duration-500"
-          onClick={() => setShowImageModal(null)}
-          style={{ backgroundColor: "rgba(229, 196, 156, 0.96)" }}
-        >
-          {/* Decorative background elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div
-              className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse"
-              style={{ backgroundColor: "#751A23", opacity: 0.12 }}
-            />
-            <div
-              className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse"
-              style={{ backgroundColor: "#751A23", opacity: 0.14, animationDelay: "1s" }}
-            />
-          </div>
-
-          <div
-            className="relative max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] bg-gradient-to-br from-white via-white rounded-3xl overflow-hidden shadow-2xl border-2 animate-in zoom-in-95 duration-500 group"
-            onClick={(e) => e.stopPropagation()}
-            style={{ borderColor: "#751A23", backgroundColor: "#E1C49C" }}
+          <h2
+            className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#FCE1B6] drop-shadow-[0_18px_48px_rgba(46,4,26,0.65)] mt-4`}
           >
-            {/* Decorative top accent */}
-            <div
-              className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r"
-              style={{ background: "linear-gradient(to right, #751A23, #751A23, #E1C49C)" }}
-            />
+            Your Evening Guide
+          </h2>
+          <p
+            className={`${inter.className} text-xs sm:text-sm md:text-base text-white/85 max-w-2xl mx-auto mt-4 leading-relaxed`}
+          >
+            Join us as we celebrate Kaith's journey into womanhood. Here's everything you need to know for this special evening—from call times and venue details to the elegant dress code that honors this milestone moment.
+          </p>
+        </div>
 
-            {/* Enhanced close button */}
-            <button
-              onClick={() => setShowImageModal(null)}
-              className="absolute top-4 right-4 sm:top-5 sm:right-5 md:top-6 md:right-6 z-20 hover:bg-white backdrop-blur-sm p-2.5 sm:p-3 rounded-xl shadow-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl active:scale-95 border-2 group/close"
-              title="Close (ESC)"
-              style={{ backgroundColor: "#E1C49C", borderColor: "#751A23", color: "#51080F" }}
-            >
-              <X className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 group-hover/close:text-[#51080F] transition-colors" />
-            </button>
-
-            {/* Venue badge */}
-            <div className="absolute top-4 left-4 sm:top-5 sm:left-5 md:top-6 md:left-6 z-20">
-              <div
-                className="flex items-center gap-2 backdrop-blur-md px-4 py-2 rounded-full shadow-xl border-2"
-                style={{ backgroundColor: "#E1C49C", borderColor: "#751A23" }}
-              >
-                {showImageModal === "ceremony" ? (
-                  <>
-                    <Heart className="w-4 h-4" fill="#751A23" style={{ color: "#51080F" }} />
-                    <span className="text-xs sm:text-sm font-bold" style={{ color: "#51080F" }}>
-                      Ceremony Venue
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Utensils className="w-4 h-4" style={{ color: "#751A23" }} />
-                    <span className="text-xs sm:text-sm font-bold" style={{ color: "#51080F" }}>
-                      Reception Venue
-                    </span>
-                  </>
-                )}
+        <div className="grid gap-5 lg:gap-6 lg:grid-cols-[1.1fr_0.9fr] items-stretch mb-12 sm:mb-16 lg:mb-20">
+          <div className="relative overflow-hidden rounded-[28px] sm:rounded-[32px] border border-white/14 bg-white/8 backdrop-blur-2xl shadow-[0_26px_65px_rgba(8,16,34,0.42)]">
+            <div className="relative h-[220px] sm:h-60 md:h-80 lg:h-[420px] xl:h-[460px] overflow-hidden">
+              <Image
+                src="/Details/event place.webp"
+                alt={venue}
+                fill
+                priority
+                className="object-cover transition-transform duration-[1200ms] group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1A0310]/95 via-[#1A0310]/35 to-transparent" />
+              <div className="absolute inset-x-4 bottom-4 sm:bottom-6 text-white">
+                <h3 className="text-xl sm:text-3xl font-serif font-semibold tracking-wide drop-shadow-lg">
+                  De Guzman's Events Place
+                </h3>
+                <p className="text-[10px] sm:text-[12px] text-white/80 tracking-[0.24em] uppercase">
+                  Ayos Lumboy, Guimba, Nueva Ecija
+                </p>
               </div>
             </div>
 
-            {/* Image section with enhanced effects */}
-            <div
-              className="relative w-full h-[50vh] sm:h-[60vh] md:h-[70vh] overflow-hidden"
-              style={{ backgroundColor: "#E1C49C" }}
-            >
-              {/* Shimmer effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity duration-1000 z-0" />
+            <div className="p-4 sm:p-7 lg:p-8 space-y-4 sm:space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="inline-flex justify-center rounded-full border border-white/18 bg-white/10 px-4 py-1.5 text-white/80 text-[9px] sm:text-[11px] tracking-[0.24em] sm:tracking-[0.32em] uppercase whitespace-nowrap">
+                  {`${ceremony.day}, ${ceremony.date}`}
+                </div>
+                <p className="text-[10px] sm:text-xs text-white/70 tracking-[0.3em] uppercase text-center sm:text-right">
+                  Doors open in the twilight
+                </p>
+              </div>
 
-              <Image
-                src="/Details/CasaAntonia.png"
-                alt={ceremonyLocationFormatted}
-                fill
-                className="object-contain p-6 sm:p-8 md:p-10 transition-transform duration-700 group-hover:scale-105 z-10"
-                sizes="95vw"
-                priority
-              />
-            </div>
-
-            {/* Enhanced content section */}
-            <div
-              className="p-5 sm:p-6 md:p-8 bg-gradient-to-br from-white to-white/95 backdrop-blur-sm border-t-2 relative"
-              style={{ borderColor: "#751A23", backgroundColor: "#E1C49C" }}
-            >
-              {/* Decorative line */}
-              <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-[#751A23]/30 to-transparent" />
-
-              <div className="space-y-5">
-                {/* Header with venue info */}
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                  <div className="space-y-2">
-                    <h3
-                      className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-3"
-                      style={{ color: "#51080F" }}
-                    >
-                      {showImageModal === "ceremony" ? (
-                        <Heart className="w-6 h-6" fill="#751A23" style={{ color: "#51080F" }} />
-                      ) : (
-                        <Utensils className="w-6 h-6" style={{ color: "#751A23" }} />
-                      )}
-                      {showImageModal === "ceremony" ? siteConfig.ceremony.venue : siteConfig.reception.venue}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm opacity-70" style={{ color: "#51080F" }}>
-                      <MapPin className="w-4 h-4" style={{ color: "#51080F" }} />
-                      <span>
-                        {showImageModal === "ceremony"
-                          ? ceremonyLocationFormatted
-                          : receptionLocationFormatted}
-                      </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
+                {schedule.map((entry) => (
+                  <div
+                    key={entry.label}
+                    className="rounded-2xl border border-white/18 bg-white/12 px-3.5 py-3 text-center shadow-[0_12px_30px_rgba(12,20,46,0.28)]"
+                  >
+                    <p className="text-[9px] sm:text-[11px] tracking-[0.34em] uppercase text-white/70 mb-1">
+                      {entry.label}
+                    </p>
+                    <div className="flex items-center justify-center gap-2 text-white text-sm sm:text-base font-semibold">
+                      <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      <span>{entry.value}</span>
                     </div>
-
-                    {/* Date & Time info */}
-                    {showImageModal === "ceremony" && (
-                      <div
-                        className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg border"
-                        style={{
-                          color: "#51080F",
-                          backgroundColor: "#E1C49C",
-                          opacity: 0.9,
-                          borderColor: "#751A23",
-                        }}
-                      >
-                        <Clock className="w-4 h-4" style={{ color: "#51080F" }} />
-                        <span>
-                          {formattedCeremonyDate} at {siteConfig.ceremony.time}
-                        </span>
-                      </div>
-                    )}
-                    {showImageModal === "reception" && (
-                      <div
-                        className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-lg border"
-                        style={{
-                          color: "#51080F",
-                          backgroundColor: "#E1C49C",
-                          opacity: 0.9,
-                          borderColor: "#751A23",
-                        }}
-                      >
-                        <Clock className="w-4 h-4" style={{ color: "#51080F" }} />
-                        <span>
-                          {formattedReceptionDate} - {siteConfig.reception.time}
-                        </span>
-                      </div>
-                    )}
                   </div>
+                ))}
+              </div>
 
-                  {/* Action buttons */}
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
-                    <button
-                      onClick={() =>
-                        copyToClipboard(
-                          showImageModal === "ceremony"
-                            ? ceremonyLocation
-                            : receptionLocation,
-                          `modal-${showImageModal}`,
-                        )
-                      }
-                      className="flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-white border-2 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95 shadow-md hover:bg-[#E1C49C]/25 whitespace-nowrap"
-                      title="Copy address"
-                      style={{ borderColor: "#751A23", color: "#51080F" }}
-                    >
-                      {copiedItems.has(`modal-${showImageModal}`) ? (
-                        <>
-                          <Check className="w-4 h-4" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          <span>Copy Address</span>
-                        </>
-                      )}
-                    </button>
 
-                    <button
-                      onClick={() =>
-                        openInMaps(showImageModal === "ceremony" ? ceremonyMapsLink : receptionMapsLink)
-                      }
-                      className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-95 shadow-lg whitespace-nowrap text-white"
-                      style={{
-                        background:
-                          showImageModal === "ceremony"
-                            ? "linear-gradient(to right, #751A23, #751A23)"
-                            : "linear-gradient(to right, #751A23, #E1C49C)",
-                      }}
-                    >
-                      <Navigation className="w-4 h-4 sm:w-5 sm:h-5" />
-                      <span>Get Directions</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Additional info */}
-                <div className="flex items-center gap-2 text-xs opacity-65" style={{ color: "#51080F" }}>
-                  <span className="flex items-center gap-1.5">
-                    <Camera className="w-3 h-3" />
-                    Click outside to close
+              <div className="flex flex-row gap-2.5 sm:gap-3">
+                <button
+                  onClick={openInMaps}
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FCE1B6] px-4 py-3 text-xs sm:text-sm font-semibold text-[#2E041A] transition-all duration-300 hover:-translate-y-1"
+                  aria-label="Get directions to the venue"
+                >
+                  <Navigation className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  Get Directions
+                </button>
+                <button
+                  onClick={() => copyToClipboard(venue, "venue")}
+                  className="flex-1 inline-flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/8 px-4 py-3 text-xs sm:text-sm font-semibold text-white/85 shadow-[0_12px_30px_rgba(12,20,48,0.32)] transition-all duration-300 hover:-translate-y-1 hover:border-white/35 hover:text-white"
+                  aria-label="Copy venue address"
+                >
+                  {copiedItems.has("venue") ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {copiedItems.has("venue") ? "Copied!" : "Copy Address"}
                   </span>
-                  <span className="hidden sm:inline">•</span>
-                  <span className="hidden sm:inline-flex items-center gap-1.5">Press ESC to close</span>
-                </div>
+                </button>
               </div>
             </div>
           </div>
+
+          <div className="space-y-5 sm:space-y-6">
+            <div className="rounded-[26px] sm:rounded-[30px] border border-white/18 bg-white/10 backdrop-blur-xl shadow-[0_20px_50px_rgba(8,16,34,0.4)] p-5 sm:p-7 lg:p-8 space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-3">
+                <PartyPopper className="h-6 w-6 text-[#FCE1B6]" />
+                <div>
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.38em] text-white/70">Debut Agenda</p>
+                  <h3 className="text-white text-base sm:text-lg font-semibold">Moments to Look Forward To</h3>
+                </div>
+              </div>
+              <ul className="space-y-2.5 text-xs sm:text-sm text-white/75 leading-relaxed">
+                <li className="flex items-start gap-2">
+                  <Sparkles className="mt-1 h-3.5 w-3.5 text-[#FCE1B6]" />
+                  Please arrive before the entourage call time to sign the debut guest book and take portraits.
+                </li>
+                <li className="flex items-start gap-2">
+                  <Sparkles className="mt-1 h-3.5 w-3.5 text-[#FCE1B6]" />
+                  Program wraps by 9:00 PM so you can rest and travel home safely.
+                </li>
+              </ul>
+            </div>
+
+            <div className="rounded-[26px] sm:rounded-[30px] border border-white/18 bg-white/10 backdrop-blur-xl shadow-[0_20px_50px_rgba(8,16,34,0.4)] p-5 sm:p-7 lg:p-8 space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-3">
+                <Palette className="h-6 w-6 text-[#FCE1B6]" />
+                <div>
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.38em] text-white/70">Attire & Palette</p>
+                  <h3 className="text-white text-base sm:text-lg font-semibold">Dress in Midnight Constellations</h3>
+                </div>
+              </div>
+              <ul className="space-y-2 text-xs sm:text-sm text-white/75 leading-relaxed">
+                <li>
+                  Ladies: pure black long gown.
+                </li>
+                <li>Gentlemen: tuxedo.</li>
+              </ul>
+              <div className="relative w-full rounded-xl overflow-hidden border border-white/20">
+                <Image
+                  src="/Details/dress code.webp"
+                  alt="Dress code guidelines"
+                  width={400}
+                  height={300}
+                  className="w-full h-auto object-contain"
+                />
+              </div>
+            </div>
+
+            <div className="rounded-[26px] sm:rounded-[30px] border border-white/18 bg-white/10 backdrop-blur-xl shadow-[0_20px_50px_rgba(8,16,34,0.4)] p-5 sm:p-7 lg:p-8 space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-3">
+                <Car className="h-6 w-6 text-[#FCE1B6]" />
+                <div>
+                  <p className="text-xs sm:text-sm uppercase tracking-[0.38em] text-white/70">Travel Notes</p>
+                  <h3 className="text-white text-base sm:text-lg font-semibold">Parking & Transport</h3>
+                </div>
+              </div>
+              <ul className="space-y-2.5 text-xs sm:text-sm text-white/75 leading-relaxed">
+                <li>Complimentary parking is available at the hotel—just mention Kaith's debut at the gate.</li>
+              </ul>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </Section>
   )
 }
-
-

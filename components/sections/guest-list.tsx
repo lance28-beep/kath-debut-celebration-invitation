@@ -18,12 +18,22 @@ import {
   UserPlus,
   Users,
 } from "lucide-react"
-import { Cormorant_Garamond } from "next/font/google"
+import { Cormorant_Garamond, Great_Vibes, Inter } from "next/font/google"
 import { siteConfig } from "@/content/site"
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
   weight: ["400"],
+})
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  weight: "400",
+})
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
 })
 
 interface ApiGuest {
@@ -398,42 +408,36 @@ export function GuestList() {
     <Section id="guest-list" className="relative z-30 py-6 sm:py-10 md:py-12 lg:py-16">
       {/* Header */}
       <div className="relative z-10 text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10 px-2 sm:px-3 md:px-4">
-        {/* Small label */}
-        <p
-          className={`${cormorant.className} text-[0.7rem] sm:text-xs md:text-sm uppercase tracking-[0.28em] text-white mb-2`}
-          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}
-        >
-          Confirm Your Attendance
-        </p>
-        
-        <h2
-          className="style-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-1.5 sm:mb-3 md:mb-4"
-          style={{ textShadow: "0 4px 18px rgba(0,0,0,0.85)" }}
-        >
-          RSVP
-        </h2>
-        
-        <p className={`${cormorant.className} text-xs sm:text-sm md:text-base text-white/90 font-light max-w-xl mx-auto leading-relaxed px-2 mb-2 sm:mb-3`}>
-          Please search for your name below to confirm your presence at our special day
-        </p>
-        <p className={`${cormorant.className} text-[0.65rem] sm:text-xs md:text-sm text-white/80 font-light max-w-xl mx-auto leading-relaxed px-2 mb-2 sm:mb-3`}>
-          RSVP Deadline: {siteConfig.details.rsvp.deadline}
-        </p>
-        
+      <div className="text-center mb-10 sm:mb-14 lg:mb-16 space-y-3 sm:space-y-4">
+          <div
+            className={`inline-flex items-center gap-2 rounded-full border border-[#FCE1B6]/20 bg-[#2E041A]/40 px-5 py-2 text-[10px] sm:text-xs tracking-[0.48em] uppercase text-[#FCE1B6] ${inter.className}`}
+          >
+            RSVP & Guestbook
+          </div>
+          <h2
+            className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#FCE1B6] drop-shadow-[0_18px_40px_rgba(46,4,26,0.68)]`}
+          >
+            Join Us in This Elegant Celebration
+          </h2>
+          <p className={`${inter.className} text-xs sm:text-sm md:text-base text-[#FCE1B6]/85 max-w-2xl mx-auto leading-relaxed`}>
+            Search your name to confirm your presence at Kaith's debut. Your RSVP helps us create an evening of grace,
+            warmth, and cherished memories as we honor this milestone together.
+          </p>
+        </div>
         {/* Decorative element below subtitle */}
         <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-2 sm:mt-3 md:mt-4 lg:mt-5">
-          <div className="w-6 sm:w-8 md:w-12 lg:w-16 h-px bg-gradient-to-r from-transparent via-[#327B72]/80 to-transparent" />
-          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-[#327B72]/90 rounded-full" />
-          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white/85 rounded-full" />
-          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-[#327B72]/90 rounded-full" />
-          <div className="w-6 sm:w-8 md:w-12 lg:w-16 h-px bg-gradient-to-l from-transparent via-[#327B72]/80 to-transparent" />
+          <div className="w-6 sm:w-8 md:w-12 lg:w-16 h-px bg-gradient-to-r from-transparent via-[#FFE1BE]/80 to-transparent" />
+          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-[#FFE1BE]/90 rounded-full" />
+          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-[#FFE1BE]/85 rounded-full" />
+          <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-[#FFE1BE]/90 rounded-full" />
+          <div className="w-6 sm:w-8 md:w-12 lg:w-16 h-px bg-gradient-to-l from-transparent via-[#FFE1BE]/80 to-transparent" />
         </div>
       </div>
 
       {/* Search Section */}
       <div className="relative z-10 max-w-2xl mx-auto px-2 sm:px-4 md:px-6 overflow-visible">
         {/* Card with elegant border */}
-        <div className="relative bg-white/10 backdrop-blur-md border border-[#327B72]/60 rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg overflow-visible">
+        <div className="relative bg-[#FFE1BE]/10 backdrop-blur-md border border-[#FFE1BE]/60 rounded-lg sm:rounded-xl md:rounded-2xl shadow-lg overflow-visible">
           {/* Card content */}
           <div className="relative p-2.5 sm:p-4 md:p-5 lg:p-6 overflow-visible">
             <div className="relative z-10 space-y-3 sm:space-y-4 overflow-visible">
@@ -442,11 +446,14 @@ export function GuestList() {
                   <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-white" />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm md:text-base font-semibold text-white font-sans mb-0.5 sm:mb-1">
+                  <p className={`${cormorant.className} text-[0.65rem] sm:text-xs text-[#FFE1BE]/80 font-light mb-0.5 sm:mb-1`}>
+                    Step 1
+                  </p>
+                  <label className={`${cormorant.className} block text-xs sm:text-sm md:text-base font-semibold text-[#FFE1BE] mb-0.5 sm:mb-1`}>
                     Find Your Name
                   </label>
-                  <p className="text-[10px] sm:text-xs text-white/80 font-sans">
-                    Type as you search to see instant results
+                  <p className={`${cormorant.className} text-[10px] sm:text-xs text-[#FFE1BE]/80 font-light`}>
+                    Begin typing to see your RSVP details appear.
                   </p>
                 </div>
               </div>
@@ -457,7 +464,7 @@ export function GuestList() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Type your name..."
+                    placeholder="Type your name to find your invitation..."
                     className="w-full pl-8 sm:pl-10 pr-2.5 sm:pr-3 py-2 sm:py-2.5 md:py-3 border-2 border-[#327B72]/60 focus:border-[#751A23] rounded-lg text-xs sm:text-sm font-sans text-[#243127] placeholder:text-[#909E8D]/70 transition-all duration-300 hover:border-[#751A23]/70 focus:ring-2 focus:ring-[#751A23]/20 bg-white shadow-sm focus:shadow-md"
                   />
                 </div>
@@ -559,23 +566,23 @@ export function GuestList() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 mb-1 sm:mb-1.5 md:mb-2 lg:mb-3">
                       <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Heart className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-white" />
+                        <Heart className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 lg:h-5 lg:w-5 text-[#FFE1BE]" />
                       </div>
-                      <h3 className="text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl font-serif font-bold text-white truncate">
-                        You're Invited!
+                      <h3 className={`${greatVibes.className} text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl text-[#FFE1BE] truncate`}>
+                        RSVP Update
                       </h3>
                     </div>
-                    <p className="text-white/95 text-[10px] sm:text-xs md:text-sm lg:text-base xl:text-lg font-sans leading-tight sm:leading-normal">
-                      Hello <span className="font-extrabold text-[#FFFFFF] drop-shadow-[0_1px_6px_rgba(117,26,35,0.55)]">{selectedGuest?.Name}</span>, you are invited to our wedding!
+                    <p className={`${cormorant.className} text-[#FFE1BE]/95 text-sm sm:text-base md:text-lg lg:text-xl font-light leading-tight sm:leading-normal`}>
+                      Welcome, <span className="font-semibold text-[#FFE1BE] drop-shadow-[0_1px_6px_rgba(73,5,5,0.55)]">{selectedGuest?.Name}</span>
                     </p>
-                    <p className="text-white/90 text-[10px] sm:text-xs md:text-sm font-sans mt-1 sm:mt-1.5">
-                      We've reserved <span className="font-bold text-white">{selectedGuest?.AllowedGuests || 1}</span> {selectedGuest?.AllowedGuests === 1 ? 'seat' : 'seats'} for you.
+                    <p className={`${cormorant.className} text-[#FFE1BE]/90 text-xs sm:text-sm md:text-base font-light mt-2 sm:mt-2.5 leading-relaxed`}>
+                      We're delighted to have you join us for Kaith's elegant debut celebration. Please confirm your attendance for this special evening.
                     </p>
                   </div>
                   {!hasResponded && (
                     <button
                       onClick={handleCloseModal}
-                      className="text-white/80 hover:text-white transition-colors p-0.5 sm:p-1 md:p-2 hover:bg-white/20 rounded-full flex-shrink-0"
+                      className="text-[#FFE1BE]/80 hover:text-[#FFE1BE] transition-colors p-0.5 sm:p-1 md:p-2 hover:bg-white/20 rounded-full flex-shrink-0"
                     >
                       <X className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                     </button>
@@ -650,11 +657,11 @@ export function GuestList() {
                     }}
                     className="space-y-2.5 sm:space-y-3 md:space-y-4"
                   >
-                    {/* Can you attend? */}
+                    {/* Will you be joining us? */}
                     <div>
-                    <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[#243127] mb-1.5 sm:mb-2 font-sans">
+                    <label className={`${cormorant.className} flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[#243127] mb-1.5 sm:mb-2`}>
                         <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#909E8D] flex-shrink-0" />
-                        <span>Can you attend? *</span>
+                        <span>Will you be joining us?</span>
                       </label>
                       <div className="grid grid-cols-2 gap-1.5 sm:gap-2 md:gap-3">
                         <button
@@ -675,11 +682,11 @@ export function GuestList() {
                               }`}
                             />
                             <span
-                              className={`text-xs sm:text-sm font-bold ${
+                              className={`${cormorant.className} text-xs sm:text-sm font-semibold ${
                                 formData.RSVP === "Yes" ? "text-[#751A23]" : "text-[#243127]"
                               }`}
                             >
-                              Yes!
+                              Yes, I'll attend
                             </span>
                           </div>
                         </button>
@@ -699,11 +706,11 @@ export function GuestList() {
                               }`}
                             />
                             <span
-                              className={`text-xs sm:text-sm font-bold ${
+                              className={`${cormorant.className} text-xs sm:text-sm font-semibold ${
                                 formData.RSVP === "No" ? "text-red-600" : "text-[#243127]"
                               }`}
                             >
-                              Sorry, No
+                              Send my regards
                             </span>
                           </div>
                         </button>
@@ -767,18 +774,18 @@ export function GuestList() {
                       </div>
                     )}
 
-                    {/* Message to the couple */}
+                    {/* Message for Kaith */}
                     <div>
-                    <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[#243127] mb-1.5 sm:mb-2 font-sans flex-wrap">
+                    <label className={`${cormorant.className} flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[#243127] mb-1.5 sm:mb-2 flex-wrap`}>
                       <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#909E8D] flex-shrink-0" />
-                        <span>Your Message to the Couple</span>
-                      <span className="text-[10px] sm:text-xs font-normal text-[#909E8D]">(Optional)</span>
+                        <span>Message for Kaith</span>
+                      <span className={`${cormorant.className} text-[10px] sm:text-xs font-normal text-[#909E8D]`}>(optional)</span>
                       </label>
                       <textarea
                         name="Message"
                         value={formData.Message}
                         onChange={handleFormChange}
-                        placeholder="Share your excitement..."
+                        placeholder="Share a heartfelt message or wish for Kaith on her special day..."
                         rows={3}
                       className="w-full px-2.5 sm:px-3 py-1.5 sm:py-2 border-2 border-[#327B72]/60 focus:border-[#751A23] rounded-lg text-xs sm:text-sm font-sans text-[#243127] placeholder:text-[#909E8D]/70 transition-all duration-300 focus:ring-2 focus:ring-[#751A23]/20 resize-none bg-white"
                       />
@@ -786,10 +793,10 @@ export function GuestList() {
 
                     {/* Email */}
                     <div>
-                    <label className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[#243127] mb-1.5 sm:mb-2 font-sans flex-wrap">
+                    <label className={`${cormorant.className} flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[#243127] mb-1.5 sm:mb-2 flex-wrap`}>
                         <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#909E8D] flex-shrink-0" />
-                        <span>Your Email Address</span>
-                        <span className="text-[10px] sm:text-xs font-normal text-[#909E8D]">(Optional)</span>
+                        <span>Email Address</span>
+                        <span className={`${cormorant.className} text-[10px] sm:text-xs font-normal text-[#909E8D]`}>(optional)</span>
                       </label>
                       <input
                         type="email"

@@ -9,12 +9,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import MessageWallDisplay from "./message-wall-display"
-import { Cormorant_Garamond } from "next/font/google"
-import { siteConfig } from "@/content/site"
+import { Great_Vibes, Inter } from "next/font/google"
 
-const cormorant = Cormorant_Garamond({
+const greatVibes = Great_Vibes({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: "400",
+})
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
 })
 
 interface Message {
@@ -29,8 +33,6 @@ interface MessageFormProps {
 }
 
 function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
-  const { brideNickname, groomNickname } = siteConfig.couple
-  const coupleDisplayName = `${groomNickname} & ${brideNickname}`
 
   const formRef = useRef<HTMLFormElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -143,12 +145,22 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
                 <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white" />
               </div>
             </div>
-            <h3 className="text-base sm:text-lg md:text-xl font-playfair font-bold text-foreground mb-1.5 sm:mb-2">
-              Share Your Love
-            </h3>
-            <p className="text-[10px] sm:text-xs md:text-sm text-foreground/70 font-lora">
-              Your words will be part of {coupleDisplayName}&apos;s keepsake for years to come.
+            <p className={`${inter.className} text-[9px] sm:text-[10px] md:text-xs tracking-[0.35em] uppercase text-foreground/70 mb-2`}>
+              Message For The Debutante
             </p>
+            <h3 className={`${greatVibes.className} text-xl sm:text-2xl md:text-3xl text-foreground mb-1.5 sm:mb-2`}>
+              Leave a Gilded Wish
+            </h3>
+            <p className={`${inter.className} text-[10px] sm:text-xs md:text-sm text-foreground/70 mb-3`}>
+              Every note becomes part of her story
+            </p>
+            <div className={`${inter.className} flex items-center justify-center gap-2 text-[10px] sm:text-xs text-foreground/60`}>
+              <span>Share</span>
+              <span>•</span>
+              <span>Bless</span>
+              <span>•</span>
+              <span>Send</span>
+            </div>
           </div>
 
           <form 
@@ -222,7 +234,7 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
                   }}
                   onFocus={() => setFocusedField('message')}
                   onBlur={() => setFocusedField(null)}
-                  placeholder={`Write a heartfelt message for ${coupleDisplayName}... share your wishes, memories, or words of love that will be treasured forever 💕`}
+                  placeholder="Write a heartfelt message for Kaith... share your wishes, memories, or words of love that will be treasured forever 💕"
                   className={`message-form-textarea w-full border-2 rounded-xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px] text-xs sm:text-sm md:text-base font-lora placeholder:italic placeholder:leading-relaxed transition-all duration-300 resize-none bg-white/85 backdrop-blur-sm shadow-sm hover:shadow-md focus:shadow-lg py-2 sm:py-3 md:py-4 px-3 sm:px-4 md:px-5 ${
                     focusedField === 'message' 
                       ? 'border-[#751A23] focus:border-[#751A23] focus:ring-4 focus:ring-[#751A23]/25 shadow-lg' 
@@ -280,9 +292,6 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
 }
 
 export function Messages() {
-  const { brideNickname, groomNickname } = siteConfig.couple
-  const coupleDisplayName = `${groomNickname} & ${brideNickname}`
-
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -322,27 +331,69 @@ export function Messages() {
   return (
     <Section
       id="messages"
-      className="relative overflow-hidden"
+      className="relative bg-[#490505] py-14 sm:py-18 md:py-20 lg:py-24 overflow-hidden"
     >
+      {/* Ornate pattern background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+        {/* Base pattern - diagonal lines forming diamonds */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(-45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+              repeating-linear-gradient(135deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px),
+              repeating-linear-gradient(225deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px)
+            `,
+            backgroundSize: '70px 70px, 70px 70px, 35px 35px, 35px 35px',
+          }}
+        />
+        
+        {/* Decorative scroll motifs - using SVG pattern */}
+        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+          <defs>
+            <pattern id="scrollPatternMessages" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+              {/* Scroll motifs at intersections */}
+              <g fill="none" stroke="#FCE1B6" strokeWidth="0.5">
+                {/* Top scroll */}
+                <path d="M 70 0 Q 65 15 70 30 Q 75 15 70 0" />
+                {/* Bottom scroll */}
+                <path d="M 70 140 Q 65 125 70 110 Q 75 125 70 140" />
+                {/* Left scroll */}
+                <path d="M 0 70 Q 15 65 30 70 Q 15 75 0 70" />
+                {/* Right scroll */}
+                <path d="M 140 70 Q 125 65 110 70 Q 125 75 140 70" />
+                {/* Center decorative element */}
+                <path d="M 70 30 Q 60 50 70 70 Q 80 50 70 30" />
+                <path d="M 70 110 Q 60 90 70 70 Q 80 90 70 110" />
+                <path d="M 30 70 Q 50 60 70 70 Q 50 80 30 70" />
+                <path d="M 110 70 Q 90 60 70 70 Q 90 80 110 70" />
+              </g>
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#scrollPatternMessages)" />
+        </svg>
+
+        {/* Subtle overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#490505]/80 via-transparent to-[#490505]/80" />
+      </div>
+
       <div className="relative max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
         {/* Header Section */}
-        <div className="text-center mb-4 sm:mb-6 md:mb-8 lg:mb-10">
-          <div className="space-y-2 sm:space-y-2.5">
-            <p
-              className={`${cormorant.className} text-[0.7rem] sm:text-xs md:text-sm uppercase tracking-[0.28em] text-white`}
-              style={{ textShadow: "0 2px 10px rgba(0,0,0,0.75)" }}
-            >
-              Messages for {coupleDisplayName}
-            </p>
-            <h2 className="style-script-regular text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white drop-shadow-md">
-              Love notes &amp; prayers
-            </h2>
-          </div>
-          
-          <p
-            className={`${cormorant.className} text-xs sm:text-sm md:text-base text-white/95 font-light max-w-3xl mx-auto leading-relaxed px-2 sm:px-4 mt-2`}
+        <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-16 px-4">
+          <p className={`${inter.className} text-xs sm:text-sm tracking-[0.45em] uppercase text-[#FCE1B6]/75 mb-3`}>
+            Words She&apos;ll Keep Forever
+          </p>
+          <h2
+            className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl text-[#FCE1B6] mb-4 drop-shadow-[0_18px_48px_rgba(46,4,26,0.65)]`}
           >
-            Leave a short note for {coupleDisplayName}. Every wish and prayer becomes part of their forever story.
+            Letters for Kaith
+          </h2>
+          <p className={`${inter.className} text-sm sm:text-base md:text-lg text-[#FCE1B6]/85 max-w-2xl mx-auto mt-4 leading-relaxed`}>
+            Write a wish for her eighteenth chapter
+          </p>
+          <p className={`${inter.className} text-xs sm:text-sm md:text-base text-[#FCE1B6]/75 max-w-2xl mx-auto mt-2 leading-relaxed`}>
+            Send a note woven in wine red and gold—a keepsake Kaith will treasure long after the candles fade.
           </p>
         </div>
 

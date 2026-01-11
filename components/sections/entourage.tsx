@@ -1,908 +1,999 @@
 "use client"
 
 import React from "react"
-import { useState, useEffect, useMemo, useRef } from "react"
-import { siteConfig } from "@/content/site"
-import { Loader2, Users } from "lucide-react"
-import { Cormorant_Garamond } from "next/font/google"
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400"],
-})
+import { useState, useEffect, useMemo } from "react"
+
+import { Loader2, Users } from "lucide-react"
+
+import { Great_Vibes, Playfair_Display, Inter } from "next/font/google"
+
+
+
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" })
+
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600"] })
+
+const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600"] })
+
+
 
 interface EntourageMember {
+
   Name: string
+
   RoleCategory: string
+
   RoleTitle: string
+
   Email: string
+
 }
 
-interface PrincipalSponsor {
-  MalePrincipalSponsor: string
-  FemalePrincipalSponsor: string
-}
+
 
 const ROLE_CATEGORY_ORDER = [
-  "OFFICIATING MINISTER",
-  "The Couple",
-  "Parents of the Groom",
-  "Parents of the Bride",
-  "Family of the Groom",
-  "Family of the Bride",
-  "Matron of Honor",
-  "Candle Sponsors",
-  "Veil Sponsors",
-  "Cord Sponsors",
-  "Best Man",
-  "Maid of Honor",
-  "Groomsmen",
-  "Bridesmaids",
-  "Little Groom",
-  "Little Bride",
-  "Ring Bearer",
-  "Bible Bearer",
-  "Coin Bearer",
-  "Flower Girls",
+
+  "The Debutante",
+
+  "Parents",
+
+  "Her Court",
+
+  "Honored Pair",
+
+  "Special Sponsors",
+
+  "Circle of Eighteen",
+
+  "Event Coordinators",
+
+  "Dancers",
+
+  "Young Attendants",
+
+  "Special Roles",
+
 ]
 
+
+
+const DEFAULT_CATEGORY_MAP: Record<string, string> = {
+
+  "The Couple": "The Debutante",
+
+  "Parents of the Bride": "Parents",
+
+  "Parents of the Groom": "Parents",
+
+  "Best Man": "Her Court",
+
+  "Maid/Matron of Honor": "Her Court",
+
+  "Bridesmaids": "Circle of Eighteen",
+
+  "Groomsmen": "Circle of Eighteen",
+
+  "Candle Sponsors": "Special Sponsors",
+
+  "Veil Sponsors": "Special Sponsors",
+
+  "Cord Sponsors": "Special Sponsors",
+
+  "Flower Girls": "Young Attendants",
+
+  "Ring/Coin Bearers": "Young Attendants",
+
+  "Bible Bearer": "Special Roles",
+
+  "Presider": "Special Roles",
+
+  "Reader": "Special Roles",
+
+  "Dancers": "Dancers",
+
+  "Coordinators": "Event Coordinators",
+
+}
+
+
+
 export function Entourage() {
+
   const [entourage, setEntourage] = useState<EntourageMember[]>([])
-  const [sponsors, setSponsors] = useState<PrincipalSponsor[]>([])
+
   const [isLoading, setIsLoading] = useState(true)
+
   const [error, setError] = useState<string | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
-  const sectionRef = useRef<HTMLDivElement>(null)
+
+
 
   const fetchEntourage = async () => {
+
     setIsLoading(true)
+
     try {
+
       const response = await fetch("/api/entourage", { cache: "no-store" })
+
       if (!response.ok) {
+
         throw new Error("Failed to fetch entourage")
+
       }
+
       const data: EntourageMember[] = await response.json()
+
       setEntourage(data)
+
     } catch (error: any) {
+
       console.error("Failed to load entourage:", error)
+
       setError(error?.message || "Failed to load entourage")
+
     } finally {
+
       setIsLoading(false)
+
     }
+
   }
 
-  const fetchSponsors = async () => {
-    try {
-      const res = await fetch("/api/principal-sponsor", { cache: "no-store" })
-      if (!res.ok) throw new Error("Failed to load principal sponsors")
-      const data: PrincipalSponsor[] = await res.json()
-      setSponsors(data.filter(s => s.MalePrincipalSponsor || s.FemalePrincipalSponsor))
-    } catch (e: any) {
-      console.error("Failed to load sponsors:", e)
-      // Don't set error state for sponsors, just log it
-    }
-  }
+
 
   useEffect(() => {
-    fetchEntourage()
-    fetchSponsors()
 
-    // Set up auto-refresh listener for dashboard updates
+    fetchEntourage()
+
+
+
     const handleEntourageUpdate = () => {
+
       setTimeout(() => {
+
         fetchEntourage()
-        fetchSponsors()
+
       }, 1000)
+
     }
+
+
 
     window.addEventListener("entourageUpdated", handleEntourageUpdate)
 
+
+
     return () => {
+
       window.removeEventListener("entourageUpdated", handleEntourageUpdate)
+
     }
+
   }, [])
 
-  // Intersection Observer for scroll animations
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 }
-    )
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
 
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current)
-      }
-    }
-  }, [])
+  const remapCategory = (original: string) => {
 
-  // Group entourage by role category
+    if (!original) return "Special Roles"
+
+    return DEFAULT_CATEGORY_MAP[original] || original
+
+  }
+
+
+
   const grouped = useMemo(() => {
-    const grouped: Record<string, EntourageMember[]> = {}
-    
-    entourage.forEach((member) => {
-      const category = member.RoleCategory
 
-      // Skip members without a category or in "Other"
-      if (!category || category === "Other") {
-        return
-      }
+    const grouped: Record<string, EntourageMember[]> = {}
+
+
+
+    entourage.forEach((member) => {
+
+      const category = remapCategory(member.RoleCategory)
+
       if (!grouped[category]) {
+
         grouped[category] = []
+
       }
+
       grouped[category].push(member)
+
     })
-    
+
+
+
     return grouped
+
   }, [entourage])
 
-  // Helper component for elegant section titles
-  const SectionTitle = ({ 
+
+
+  const SectionTitle = ({
+
     children,
-    align = "center",
-    className = ""
-  }: { 
-    children: React.ReactNode
-    align?: "left" | "center" | "right"
-    className?: string
-  }) => {
-    const textAlign =
-      align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
-    return (
-       <h3
-         className={`relative ${cormorant.className} text-xs sm:text-sm md:text-base lg:text-lg font-extrabold uppercase text-[#111814] mb-2 sm:mb-2.5 md:mb-3 tracking-[0.14em] sm:tracking-[0.18em] ${textAlign} ${className} transition-all duration-300 whitespace-nowrap`}
-       >
-        {children}
-      </h3>
-    )
-  }
 
-  // Helper component for name items with role title (supports alignment)
-  const NameItem = ({
-    member,
     align = "center",
-    showRole = true,
+
+    className = "",
+
   }: {
-    member: EntourageMember
-    align?: "left" | "center" | "right"
-    showRole?: boolean
-  }) => {
-    const containerAlign =
-      align === "right" ? "items-end" : align === "left" ? "items-start" : "items-center"
-    const textAlign =
-      align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
-    return (
-      <div
-        className={`relative flex flex-col ${containerAlign} justify-center py-1 sm:py-1.5 md:py-2 leading-snug sm:leading-relaxed group/item transition-all duration-300 hover:scale-[1.02] sm:hover:scale-[1.03]`}
-      >
-        {/* Hover highlight effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#751A23]/35 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 rounded-md" />
 
-        <p
-          className={`relative text-[#243127] text-[11px] sm:text-[13px] md:text-sm lg:text-base font-semibold ${textAlign} group-hover/item:text-[#1A231C] transition-all duration-300`}
-        >
-          {member.Name}
-        </p>
-        {showRole && member.RoleTitle && (
-          <p
-            className={`relative text-[#556457] text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-medium mt-0.5 leading-tight sm:leading-snug ${textAlign} tracking-wide uppercase group-hover/item:text-[#37413A] transition-colors duration-300`}
-          >
-            {member.RoleTitle}
-          </p>
-        )}
-      </div>
+    children: React.ReactNode
+
+    align?: "left" | "center" | "right"
+
+    className?: string
+
+  }) => {
+
+    const textAlign =
+
+      align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
+
+    return (
+
+      <h3
+
+                  className={`${playfair.className} text-xs sm:text-sm md:text-base tracking-[0.45em] uppercase text-[#2E041A] font-semibold mb-2 sm:mb-3 md:mb-4 ${textAlign} ${className}`}
+
+      >
+
+        {children}
+
+      </h3>
+
     )
+
   }
 
-  // Helper component for two-column layout wrapper
-  const TwoColumnLayout = ({ 
-    children, 
-    leftTitle, 
-    rightTitle,
-    singleTitle,
-    centerContent = false 
-  }: { 
-    children: React.ReactNode
-    leftTitle?: string
-    rightTitle?: string
-    singleTitle?: string
-    centerContent?: boolean
+
+
+  const NameItem = ({
+
+    member,
+
+    align = "center",
+
+    showRole = true,
+
+  }: {
+
+    member: EntourageMember
+
+    align?: "left" | "center" | "right"
+
+    showRole?: boolean
+
   }) => {
+
+    const containerAlign =
+
+      align === "right" ? "items-end" : align === "left" ? "items-start" : "items-center"
+
+    const textAlign =
+
+      align === "right" ? "text-right" : align === "left" ? "text-left" : "text-center"
+
+    return (
+
+      <div className={`flex flex-col ${containerAlign} justify-center py-1.5 sm:py-2 md:py-2.5 leading-relaxed`}
+
+      >
+
+        <p className={`${inter.className} text-[13px] sm:text-sm md:text-base font-medium text-[#2E041A] ${textAlign}`}>
+
+          {member.Name}
+
+        </p>
+
+        {showRole && member.RoleTitle && (
+
+          <p className={`${inter.className} text-[10px] sm:text-[11px] md:text-xs font-normal text-[#2E041A]/70 mt-0.5 leading-snug ${textAlign}`}>
+
+            {member.RoleTitle}
+
+          </p>
+
+        )}
+
+      </div>
+
+    )
+
+  }
+
+
+
+  const TwoColumnLayout = ({
+
+    children,
+
+    leftTitle,
+
+    rightTitle,
+
+    singleTitle,
+
+    centerContent = false,
+
+  }: {
+
+    children: React.ReactNode
+
+    leftTitle?: string
+
+    rightTitle?: string
+
+    singleTitle?: string
+
+    centerContent?: boolean
+
+  }) => {
+
     if (singleTitle) {
+
       return (
-        <div className="mb-3 sm:mb-4 md:mb-6 lg:mb-8">
+
+        <div className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
+
           <SectionTitle>{singleTitle}</SectionTitle>
-          <div className={`grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-1.5 sm:gap-x-2 md:gap-x-3 gap-y-1 sm:gap-y-1.5 md:gap-y-2 ${centerContent ? 'max-w-2xl mx-auto' : ''}`}>
+
+          <div
+
+            className={`grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-4 md:gap-x-6 gap-y-2 sm:gap-y-3 md:gap-y-4 ${centerContent ? "max-w-2xl mx-auto" : ""}`}
+
+          >
+
             {children}
+
           </div>
+
         </div>
+
       )
+
     }
 
+
+
     return (
-      <div className="mb-3 sm:mb-4 md:mb-6 lg:mb-8">
-        <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-1.5 sm:gap-x-2 md:gap-x-3 mb-1.5 sm:mb-2 md:mb-3">
+
+      <div className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
+
+        <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-4 md:gap-x-6 mb-3 sm:mb-4">
+
           {leftTitle && (
-            <SectionTitle align="right" className="pr-2 sm:pr-3 md:pr-4">{leftTitle}</SectionTitle>
+
+            <SectionTitle align="right" className="pr-3 sm:pr-4 md:pr-6">
+
+              {leftTitle}
+
+            </SectionTitle>
+
           )}
+
           {rightTitle && (
-            <SectionTitle align="left" className="pl-2 sm:pl-3 md:pl-4">{rightTitle}</SectionTitle>
+
+            <SectionTitle align="left" className="pl-3 sm:pl-4 md:pl-6">
+
+              {rightTitle}
+
+            </SectionTitle>
+
           )}
+
         </div>
-        <div className={`grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-1.5 sm:gap-x-2 md:gap-x-3 gap-y-1 sm:gap-y-1.5 md:gap-y-2 ${centerContent ? 'max-w-2xl mx-auto' : ''}`}>
+
+        <div
+
+          className={`grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-4 md:gap-x-6 gap-y-2 sm:gap-y-3 md:gap-y-4 ${centerContent ? "max-w-2xl mx-auto" : ""}`}
+
+        >
+
           {children}
+
         </div>
+
       </div>
+
     )
+
   }
 
-  return (
-    <section
-      ref={sectionRef}
-      id="entourage"
-      className="relative py-12 md:py-16 lg:py-20 overflow-hidden bg-[#51080F]"
-    >
-      {/* Background image - matching gallery */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/Details/newBackground.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
-        {/* Overlay with #751A23 */}
-        <div className="absolute inset-0 bg-[#751A23]/40" />
+
+
+  const renderDivider = (categoryIndex: number) =>
+
+    categoryIndex > 0 && (
+
+      <div className="flex justify-center py-3 sm:py-4 mb-5 sm:mb-6 md:mb-8">
+
+        <div className="h-px w-32 sm:w-48 bg-gradient-to-r from-transparent via-[#2E041A]/20 to-transparent" />
+
       </div>
 
-      {/* Section Header */}
-      <div className={`relative z-30 text-center mb-6 sm:mb-9 md:mb-12 px-3 sm:px-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'}`}>
-        {/* Small label */}
-        <p
-          className={`${cormorant.className} text-[0.7rem] sm:text-xs md:text-sm uppercase tracking-[0.28em] text-white mb-2`}
-          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.8)" }}
-        >
-          Those who stand with {siteConfig.couple.groomNickname} &amp; {siteConfig.couple.brideNickname}
-        </p>
+    )
+
+
+
+  return (
+
+    <section
+
+      id="entourage"
+
+      className="relative overflow-hidden py-16 sm:py-20 md:py-24 lg:py-28 bg-transparent"
+
+    >
+
+
+
+      <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-16 px-4">
+
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#FCE1B6]/20 bg-[#2E041A]/40 px-5 py-2 text-[10px] sm:text-xs tracking-[0.48em] uppercase text-[#FCE1B6]">
+
+          The Entourage
+
+        </div>
 
         <h2
-          className="style-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-1.5 sm:mb-3 md:mb-4"
-          style={{ textShadow: "0 4px 18px rgba(0,0,0,0.9)" }}
+
+          className={`${greatVibes.className} text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#FCE1B6] drop-shadow-[0_18px_48px_rgba(46,4,26,0.68)] mt-4`}
+
         >
-          Wedding Entourage
+
+          Honored Guests & Special Roles
+
         </h2>
 
-        {/* Sublabel */}
         <p
-          className={`${cormorant.className} text-xs sm:text-sm md:text-base text-white/90 mb-3 sm:mb-4 md:mb-5 italic`}
-          style={{ textShadow: "0 2px 8px rgba(0,0,0,0.7)" }}
+
+          className={`${inter.className} text-xs sm:text-sm md:text-base text-[#FCE1B6]/85 max-w-2xl mx-auto mt-4 leading-relaxed`}
+
         >
-          Honoring those who share in our joy
+
+          Every name holds a special place in Kaith's debut celebration—friends, family, and mentors who help make this milestone moment unforgettable.
+
         </p>
 
-        {/* Simple divider */}
-        <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-gradient-to-r from-transparent via-[#751A23]/80 to-transparent" />
-          <div className="w-1.5 h-1.5 rounded-full bg-white/80" />
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-gradient-to-l from-transparent via-[#751A23]/80 to-transparent" />
-        </div>
       </div>
 
-      {/* Central Card Container */}
-      <div
-        className={`relative z-30 max-w-4xl mx-auto px-3 sm:px-5 transition-all duration-1000 delay-300 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
-      >
-        {/* Card with burgundy theme matching gallery */}
-        <div className="relative bg-[#F4F4F4]/95 backdrop-blur-md rounded-xl sm:rounded-2xl overflow-hidden border border-[#751A23]/60 shadow-[0_20px_60px_rgba(81,8,15,0.35)] transition-all duration-500 group">
-          {/* Card content */}
-          <div className="relative p-3 sm:p-6 md:p-8 z-10">
+
+
+      <div className="relative z-10 max-w-5xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+
+        <div className="relative bg-[#FCE1B6] border-2 border-[#2E041A]/20 rounded-xl sm:rounded-2xl shadow-[0_25px_80px_rgba(46,4,26,0.45)] overflow-hidden">
+
+          <div className="absolute inset-[10px] sm:inset-[14px] md:inset-[18px] border-2 border-[#2E041A]/20 rounded-lg sm:rounded-xl pointer-events-none" />
+
+          <div className="relative p-5 sm:p-7 md:p-9 lg:p-12">
+
             {isLoading ? (
-              <div className="flex items-center justify-center py-24 sm:py-28 md:py-32">
+
+              <div className="flex items-center justify-center py-24">
+
                 <div className="flex flex-col items-center gap-4">
-                  <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 animate-spin text-white/70" />
-                  <span className="text-white/80 font-serif text-base sm:text-lg">Loading entourage...</span>
+
+                  <Loader2 className="h-12 w-12 animate-spin text-[#2E041A]" />
+
+                  <span className={`${inter.className} text-[#2E041A]/80 text-lg`}>
+
+                    Loading the entourage…
+
+                  </span>
+
                 </div>
+
               </div>
+
             ) : error ? (
-              <div className="flex items-center justify-center py-24 sm:py-28 md:py-32">
+
+              <div className="flex items-center justify-center py-24">
+
                 <div className="text-center">
-                  <p className="text-red-300 font-serif text-base sm:text-lg mb-3">{error}</p>
+
+                  <p className={`${inter.className} text-red-600 text-lg mb-2`}>{error}</p>
+
                   <button
+
                     onClick={fetchEntourage}
-                    className="text-white/90 hover:text-white font-serif underline transition-colors duration-200"
+
+                    className={`${playfair.className} text-[#2E041A] hover:text-[#2E041A]/70 transition-colors underline`}
+
                   >
+
                     Try again
+
                   </button>
+
                 </div>
+
               </div>
+
             ) : entourage.length === 0 ? (
-              <div className="text-center py-24 sm:py-28 md:py-32">
-                <Users className="h-14 w-14 sm:h-16 sm:w-16 text-white/30 mx-auto mb-4" />
-                <p className="text-white/60 font-serif text-base sm:text-lg">No entourage members yet</p>
+
+              <div className="text-center py-24">
+
+                <Users className="h-16 w-16 text-[#2E041A]/30 mx-auto mb-4" />
+
+                <p className={`${inter.className} text-[#2E041A]/70 text-lg`}>
+
+                  The entourage list will be available soon.
+
+                </p>
+
               </div>
+
             ) : (
-            <>
-              {ROLE_CATEGORY_ORDER.map((category, categoryIndex) => {
-                const members = grouped[category] || []
-                
-                if (members.length === 0) return null
 
-                // Special handling for The Couple - display Bride and Groom side by side
-                if (category === "The Couple") {
-                   const groom = members.find(m => m.RoleTitle?.toLowerCase().includes('groom'))
-                  const bride = members.find(m => m.RoleTitle?.toLowerCase().includes('bride'))
-                  
+              <div className="relative z-10 w-full">
+
+                {ROLE_CATEGORY_ORDER.map((category, categoryIndex) => {
+
+                  const members = grouped[category] || []
+
+                  if (members.length === 0) return null
+
+
+
+                  if (category === "The Debutante") {
+
+                    const debutante = members[0]
+
+                    return (
+
+                      <div key={category}>
+
+                        {renderDivider(categoryIndex)}
+
+                        <TwoColumnLayout singleTitle="The Debutante" centerContent>
+
+                          <div className="col-span-full">
+
+                            <div className="max-w-sm mx-auto">
+
+                              {debutante && <NameItem member={debutante} align="center" showRole />}
+
+                            </div>
+
+                          </div>
+
+                        </TwoColumnLayout>
+
+                      </div>
+
+                    )
+
+                  }
+
+
+
+                  if (category === "Parents") {
+
+                    const parents = members
+
+                    const left = parents.filter((member) =>
+
+                      member.RoleTitle?.toLowerCase().includes("father")
+
+                    )
+
+                    const right = parents.filter((member) =>
+
+                      member.RoleTitle?.toLowerCase().includes("mother")
+
+                    )
+
+                    const maxLen = Math.max(left.length, right.length)
+
+                    return (
+
+                      <div key={category}>
+
+                        {renderDivider(categoryIndex)}
+
+                        <TwoColumnLayout leftTitle="Fathers" rightTitle="Mothers">
+
+                          {Array.from({ length: maxLen }).map((_, idx) => (
+
+                            <React.Fragment key={`parents-row-${idx}`}>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+
+                              </div>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+
+                              </div>
+
+                            </React.Fragment>
+
+                          ))}
+
+                        </TwoColumnLayout>
+
+                      </div>
+
+                    )
+
+                  }
+
+
+
+                  if (category === "Her Court" || category === "Honored Pair") {
+
+                    const leftMembers = grouped["Honored Pair"] || []
+
+                    const rightMembers = grouped["Her Court"] || []
+
+                    if (category !== "Honored Pair") return null
+
+                    const maxLen = Math.max(leftMembers.length, rightMembers.length)
+
+                    return (
+
+                      <div key="court">
+
+                        {renderDivider(categoryIndex)}
+
+                        <TwoColumnLayout leftTitle="Honored Pair" rightTitle="Her Court">
+
+                          {Array.from({ length: maxLen }).map((_, idx) => (
+
+                            <React.Fragment key={`court-row-${idx}`}>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {leftMembers[idx] ? (
+
+                                  <NameItem member={leftMembers[idx]} align="right" />
+
+                                ) : (
+
+                                  <div className="py-2" />
+
+                                )}
+
+                              </div>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {rightMembers[idx] ? (
+
+                                  <NameItem member={rightMembers[idx]} align="left" />
+
+                                ) : (
+
+                                  <div className="py-2" />
+
+                                )}
+
+                              </div>
+
+                            </React.Fragment>
+
+                          ))}
+
+                        </TwoColumnLayout>
+
+                      </div>
+
+                    )
+
+                  }
+
+
+
+                  if (category === "Circle of Eighteen") {
+
+                    const debutantes = grouped["Circle of Eighteen"] || []
+
+                    const half = Math.ceil(debutantes.length / 2)
+
+                    const left = debutantes.slice(0, half)
+
+                    const right = debutantes.slice(half)
+
+                    const maxLen = Math.max(left.length, right.length)
+
+                    return (
+
+                      <div key="circle">
+
+                        {renderDivider(categoryIndex)}
+
+                        <TwoColumnLayout leftTitle="Circle A" rightTitle="Circle B">
+
+                          {Array.from({ length: maxLen }).map((_, idx) => (
+
+                            <React.Fragment key={`circle-row-${idx}`}>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+
+                              </div>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+
+                              </div>
+
+                            </React.Fragment>
+
+                          ))}
+
+                        </TwoColumnLayout>
+
+                      </div>
+
+                    )
+
+                  }
+
+
+
+                  if (category === "Special Sponsors") {
+
+                    const sponsors = members
+
+                    const half = Math.ceil(sponsors.length / 2)
+
+                    const left = sponsors.slice(0, half)
+
+                    const right = sponsors.slice(half)
+
+                    const maxLen = Math.max(left.length, right.length)
+
+                    return (
+
+                      <div key="sponsors">
+
+                        {renderDivider(categoryIndex)}
+
+                        <TwoColumnLayout leftTitle="Special Sponsors A" rightTitle="Special Sponsors B">
+
+                          {Array.from({ length: maxLen }).map((_, idx) => (
+
+                            <React.Fragment key={`sponsors-row-${idx}`}>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+
+                              </div>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+
+                              </div>
+
+                            </React.Fragment>
+
+                          ))}
+
+                        </TwoColumnLayout>
+
+                      </div>
+
+                    )
+
+                  }
+
+
+
+                  const singleColumn = new Set([
+
+                    "Honored Pair",
+
+                    "Event Coordinators",
+
+                    "Dancers",
+
+                    "Young Attendants",
+
+                    "Special Roles",
+
+                  ])
+
+
+
                   return (
+
                     <div key={category}>
-                      {categoryIndex > 0 && (
-                        <div className="flex justify-center py-2 sm:py-3 md:py-4 mb-3 sm:mb-4 md:mb-6">
-                          <div className="flex items-center gap-1.5 sm:gap-2 w-full max-w-md">
-                            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                            <div className="flex items-center gap-1 sm:gap-1.5">
-                              <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-white/60 rounded-full" />
-                              <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-white rounded-full" />
-                              <div className="w-0.5 h-0.5 sm:w-1 sm:h-1 bg-white/60 rounded-full" />
-                            </div>
-                            <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/60 to-transparent"></div>
-                          </div>
-                        </div>
-                      )}
-                      <TwoColumnLayout singleTitle="The Couple" centerContent={true}>
-                        <div className="px-2 sm:px-3 md:px-4">
-                          {groom && <NameItem member={groom} align="right" />}
-                        </div>
-                        <div className="px-2 sm:px-3 md:px-4">
-                          {bride && <NameItem member={bride} align="left" />}
-                        </div>
-                      </TwoColumnLayout>
-                    </div>
-                  )
-                }
 
-                // Special handling for Parents sections - combine into single two-column layout
-                if (category === "Parents of the Bride" || category === "Parents of the Groom") {
-                  // Get both parent groups
-                  const parentsBride = grouped["Parents of the Bride"] || []
-                  const parentsGroom = grouped["Parents of the Groom"] || []
-                  
-                  // Helper function to sort parents: father first, then mother
-                  const sortParents = (members: EntourageMember[]) => {
-                    return [...members].sort((a, b) => {
-                      const aIsFather = a.RoleTitle?.toLowerCase().includes('father') ?? false
-                      const bIsFather = b.RoleTitle?.toLowerCase().includes('father') ?? false
-                      
-                      // Father comes first
-                      if (aIsFather && !bIsFather) return -1
-                      if (!aIsFather && bIsFather) return 1
-                      return 0
-                    })
-                  }
-                  
-                  // Only render once (when processing "Parents of the Groom")
-                  if (category === "Parents of the Groom") {
-                    return (
-                      <div key="Parents">
-                        {categoryIndex > 0 && (
-                          <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                            <div className="flex items-center gap-2 w-full max-w-md">
-                              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                              </div>
-                              <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/60 to-transparent"></div>
-                            </div>
-                          </div>
-                        )}
-                        <TwoColumnLayout leftTitle="Groom’s Parents" rightTitle="Bride’s Parents">
-                          {(() => {
-                            const leftArr = sortParents(parentsGroom)
-                            const rightArr = sortParents(parentsBride)
-                            const maxLen = Math.max(leftArr.length, rightArr.length)
-                            const rows = []
-                            for (let i = 0; i < maxLen; i++) {
-                              const left = leftArr[i]
-                              const right = rightArr[i]
-                              rows.push(
-                                <React.Fragment key={`parents-row-${i}`}>
-                                  <div key={`parent-groom-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {left ? <NameItem member={left} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                  <div key={`parent-bride-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {right ? <NameItem member={right} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                </React.Fragment>
-                              )
-                            }
-                            return rows
-                          })()}
-                        </TwoColumnLayout>
-                        
-                        {/* Principal Sponsors section - displayed after Parents */}
-                        {sponsors.length > 0 && (
-                          <div key="SponsorsAfterParents">
-                            <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                              <div className="flex items-center gap-2 w-full max-w-md">
-                                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                                <div className="flex items-center gap-1.5">
-                                  <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                  <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                                  <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                </div>
-                                <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/60 to-transparent"></div>
-                              </div>
-                            </div>
-                            <TwoColumnLayout singleTitle="Principal Sponsors" centerContent={true}>
-                              {sponsors.map((sponsor, idx) => (
-                                <React.Fragment key={`sponsor-row-${idx}`}>
-                                  <div key={`sponsor-male-${idx}`} className="px-2 sm:px-3 md:px-4">
-                                    {sponsor.MalePrincipalSponsor ? (
-                                      <NameItem 
-                                        member={{
-                                          Name: sponsor.MalePrincipalSponsor,
-                                          RoleCategory: "",
-                                          RoleTitle: "",
-                                          Email: ""
-                                        }} 
-                                        align="right" 
-                                        showRole={false}
-                                      />
-                                    ) : (
-                                      <div className="py-0.5 sm:py-1 md:py-1.5" />
-                                    )}
-                                  </div>
-                                  <div key={`sponsor-female-${idx}`} className="px-2 sm:px-3 md:px-4">
-                                    {sponsor.FemalePrincipalSponsor ? (
-                                      <NameItem 
-                                        member={{
-                                          Name: sponsor.FemalePrincipalSponsor,
-                                          RoleCategory: "",
-                                          RoleTitle: "",
-                                          Email: ""
-                                        }} 
-                                        align="left" 
-                                        showRole={false}
-                                      />
-                                    ) : (
-                                      <div className="py-0.5 sm:py-1 md:py-1.5" />
-                                    )}
-                                  </div>
-                                </React.Fragment>
-                              ))}
-                            </TwoColumnLayout>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  }
-                  // Skip rendering for "Parents of the Bride" since it's already rendered above
-                  return null
-                }
+                      {renderDivider(categoryIndex)}
 
-                // Special handling for Family of the Groom/Bride - combine into single two-column layout
-                if (category === "Family of the Groom" || category === "Family of the Bride") {
-                  const familyGroom = grouped["Family of the Groom"] || []
-                  const familyBride = grouped["Family of the Bride"] || []
+                      <TwoColumnLayout singleTitle={category} centerContent>
 
-                  if (category === "Family of the Groom") {
-                    return (
-                      <div key="Family">
-                        {categoryIndex > 0 && (
-                          <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                            <div className="flex items-center gap-2 w-full max-w-md">
-                              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                              </div>
-                              <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/60 to-transparent"></div>
-                            </div>
-                          </div>
-                        )}
-                        <TwoColumnLayout leftTitle="Family of the Groom" rightTitle="Family of the Bride">
-                          {(() => {
-                            const maxLen = Math.max(familyGroom.length, familyBride.length)
-                            const rows = []
-                            for (let i = 0; i < maxLen; i++) {
-                              const left = familyGroom[i]
-                              const right = familyBride[i]
-                              rows.push(
-                                <React.Fragment key={`family-row-${i}`}>
-                                  <div key={`family-groom-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {left ? <NameItem member={left} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                  <div key={`family-bride-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {right ? <NameItem member={right} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                </React.Fragment>
-                              )
-                            }
-                            return rows
-                          })()}
-                        </TwoColumnLayout>
-                      </div>
-                    )
-                  }
-
-                  return null
-                }
-
-                // Special handling for Maid/Matron of Honor and Best Man - combine into single two-column layout
-                if (category === "Matron of Honor" || category === "Maid of Honor" || category === "Best Man") {
-                  // Get both honor attendant groups - combine Maid and Matron of Honor
-                  const maidOfHonor = [...(grouped["Maid of Honor"] || []), ...(grouped["Matron of Honor"] || [])]
-                  const bestMan = grouped["Best Man"] || []
-                  
-                  // Only render once (when processing "Best Man")
-                  if (category === "Best Man") {
-                    return (
-                      <div key="HonorAttendants">
-                        {categoryIndex > 0 && (
-                          <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                            <div className="flex items-center gap-2 w-full max-w-md">
-                              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                              </div>
-                              <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/60 to-transparent"></div>
-                            </div>
-                          </div>
-                        )}
-                        <TwoColumnLayout leftTitle="Best Man" rightTitle="Maid of Honor">
-                          {(() => {
-                            const maxLen = Math.max(bestMan.length, maidOfHonor.length)
-                            const rows = []
-                            for (let i = 0; i < maxLen; i++) {
-                              const left = bestMan[i]
-                              const right = maidOfHonor[i]
-                              rows.push(
-                                <React.Fragment key={`honor-row-${i}`}>
-                                  <div key={`bestman-cell-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {left ? <NameItem member={left} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                  <div key={`maid-cell-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {right ? <NameItem member={right} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                </React.Fragment>
-                              )
-                            }
-                            return rows
-                          })()}
-                        </TwoColumnLayout>
-                      </div>
-                    )
-                  }
-                  // Skip rendering for "Matron of Honor" and "Maid of Honor" since they're already rendered above
-                  return null
-                }
-
-                // Special handling for Little Groom and Little Bride - combine into single two-column layout
-                if (category === "Little Groom" || category === "Little Bride") {
-                  // Get both little ones groups
-                  const littleGroom = grouped["Little Groom"] || []
-                  const littleBride = grouped["Little Bride"] || []
-                  
-                  // Only render once (when processing "Little Groom")
-                  if (category === "Little Groom") {
-                    return (
-                      <div key="LittleOnes">
-                        {categoryIndex > 0 && (
-                          <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                            <div className="flex items-center gap-2 w-full max-w-md">
-                              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                                <div className="w-1 h-1 bg-white/60 rounded-full" />
-                              </div>
-                              <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/60 to-transparent"></div>
-                            </div>
-                          </div>
-                        )}
-                        <TwoColumnLayout leftTitle="Little Groom" rightTitle="Little Bride">
-                          {(() => {
-                            const maxLen = Math.max(littleGroom.length, littleBride.length)
-                            const rows = []
-                            for (let i = 0; i < maxLen; i++) {
-                              const left = littleGroom[i]
-                              const right = littleBride[i]
-                              rows.push(
-                                <React.Fragment key={`little-row-${i}`}>
-                                  <div key={`littlegroom-cell-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {left ? <NameItem member={left} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                  <div key={`littlebride-cell-${i}`} className="px-2 sm:px-3 md:px-4">
-                                    {right ? <NameItem member={right} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                  </div>
-                                </React.Fragment>
-                              )
-                            }
-                            return rows
-                          })()}
-                        </TwoColumnLayout>
-                      </div>
-                    )
-                  }
-                  // Skip rendering for "Little Bride" since it's already rendered above
-                  return null
-                }
-
-                // Special handling for Bridesmaids and Groomsmen - combine into single two-column layout
-                if (category === "Bridesmaids" || category === "Groomsmen") {
-                  // Get both bridal party groups
-                  const bridesmaids = grouped["Bridesmaids"] || []
-                  const groomsmen = grouped["Groomsmen"] || []
-                  
-                  // Only render once (when processing "Bridesmaids")
-                  if (category === "Bridesmaids") {
-                    return (
-                      <React.Fragment key="BridalPartySection">
-                        {/* Groomsmen/Bridesmaids section */}
-                        <div key="BridalParty">
-                          {categoryIndex > 0 && (
-                            <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                              <div className="flex items-center gap-2 w-full max-w-md">
-                                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/60 to-transparent"></div>
-                                <div className="flex items-center gap-1.5">
-                                  <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                  <div className="w-1.5 h-1.5 bg-white rounded-full" />
-                                  <div className="w-1 h-1 bg-white/60 rounded-full" />
-                                </div>
-                                <div className="h-px flex-1 bg-gradient-to-l from-transparent via-white/60 to-transparent"></div>
-                              </div>
-                            </div>
-                          )}
-                          <TwoColumnLayout leftTitle="Groomsmen" rightTitle="Bridesmaids">
-                            {(() => {
-                              const maxLen = Math.max(bridesmaids.length, groomsmen.length)
-                              const rows = []
-                              for (let i = 0; i < maxLen; i++) {
-                                const groomsman = groomsmen[i]
-                                const bridesmaid = bridesmaids[i]
-                                rows.push(
-                                  <React.Fragment key={`bridal-row-${i}`}>
-                                    <div key={`groomsman-cell-${i}`} className="px-2 sm:px-3 md:px-4">
-                                      {groomsman ? <NameItem member={groomsman} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                    </div>
-                                    <div key={`bridesmaid-cell-${i}`} className="px-2 sm:px-3 md:px-4">
-                                      {bridesmaid ? <NameItem member={bridesmaid} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                    </div>
-                                  </React.Fragment>
-                                )
-                              }
-                              return rows
-                            })()}
-                          </TwoColumnLayout>
-                        </div>
-                      </React.Fragment>
-                    )
-                  }
-                  // Skip rendering for "Groomsmen" since it's already rendered above
-                  return null
-                }
-
-                // Special handling: Add "Secondary Sponsors" label above Candle Sponsors
-                if (category === "Candle Sponsors") {
-                  return (
-                    <div key={category}>
-                      {categoryIndex > 0 && (
-                        <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                          <div className="flex items-center gap-2 w-full max-w-md">
-                            <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-[#751A23]/50 to-[#751A23]"></div>
-                            <div className="w-1.5 h-1.5 bg-[#751A23] rounded-full"></div>
-                            <div className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent via-[#751A23]/50 to-[#751A23]"></div>
-                          </div>
-                        </div>
-                      )}
-                      {/* Secondary Sponsors label */}
-                      <div className="mb-3 sm:mb-4 md:mb-5">
-                        <SectionTitle>Secondary Sponsors</SectionTitle>
-                      </div>
-                      <TwoColumnLayout singleTitle={category} centerContent={true}>
                         {(() => {
-                          const PAIRED_SECTIONS = new Set(["Candle Sponsors", "Cord Sponsors", "Veil Sponsors"])
-                          if (PAIRED_SECTIONS.has(category) && members.length === 2) {
-                            const left = members[0]
-                            const right = members[1]
-                            return (
-                              <>
-                                <div className="px-2 sm:px-3 md:px-4">
-                                  <NameItem member={left} align="right" />
-                                </div>
-                                <div className="px-2 sm:px-3 md:px-4">
-                                  <NameItem member={right} align="left" />
-                                </div>
-                              </>
-                            )
-                          }
-                          if (members.length <= 2) {
-                            return (
-                              <div className="col-span-full">
-                                <div className="max-w-sm mx-auto flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2">
-                                  {members.map((member, idx) => (
-                                    <NameItem key={`${category}-${idx}-${member.Name}`} member={member} align="center" />
-                                  ))}
-                                </div>
-                              </div>
-                            )
-                          }
-                          // Default two-column sections: render row-by-row pairs
-                          const half = Math.ceil(members.length / 2)
-                          const left = members.slice(0, half)
-                          const right = members.slice(half)
-                          const maxLen = Math.max(left.length, right.length)
-                          const rows = []
-                          for (let i = 0; i < maxLen; i++) {
-                            const l = left[i]
-                            const r = right[i]
-                            rows.push(
-                              <React.Fragment key={`${category}-row-${i}`}>
-                                <div key={`${category}-cell-left-${i}`} className="px-2 sm:px-3 md:px-4">
-                                  {l ? <NameItem member={l} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                </div>
-                                <div key={`${category}-cell-right-${i}`} className="px-2 sm:px-3 md:px-4">
-                                  {r ? <NameItem member={r} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                                </div>
-                              </React.Fragment>
-                            )
-                          }
-                          return rows
-                        })()}
-                      </TwoColumnLayout>
-                    </div>
-                  )
-                }
 
-                // Default: single title, centered content
-                return (
-                  <div key={category}>
-                    {categoryIndex > 0 && (
-                      <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                        <div className="flex items-center gap-2 w-full max-w-md">
-                          <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-[#751A23]/50 to-[#751A23]"></div>
-                          <div className="w-1.5 h-1.5 bg-[#751A23] rounded-full"></div>
-                          <div className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent via-[#751A23]/50 to-[#751A23]"></div>
-                        </div>
-                      </div>
-                    )}
-                    <TwoColumnLayout singleTitle={category} centerContent={true}>
-                      {(() => {
-                        const SINGLE_COLUMN_SECTIONS = new Set([
-                          "Best Man",
-                          "Maid of Honor",
-                          "Ring Bearer",
-                          "Coin Bearer",
-                          "Bible Bearer",
-                          "Flower Girls",
-                          "Presider",
-                        ])
-                        // Special rule: paired sponsor roles with exactly 2 names should meet at center
-                        const PAIRED_SECTIONS = new Set(["Candle Sponsors", "Cord Sponsors", "Veil Sponsors"])
-                        if (PAIRED_SECTIONS.has(category) && members.length === 2) {
-                          const left = members[0]
-                          const right = members[1]
-                          return (
-                            <>
-                              <div className="px-2 sm:px-3 md:px-4">
-                                <NameItem member={left} align="right" />
+                          if (singleColumn.has(category) || members.length <= 2) {
+
+                            return (
+
+                              <div className="col-span-full">
+
+                                <div className="max-w-sm mx-auto flex flex-col items-center gap-2.5">
+
+                                  {members.map((member, idx) => (
+
+                                    <NameItem
+
+                                      key={`${category}-${idx}-${member.Name}`}
+
+                                      member={member}
+
+                                      align="center"
+
+                                    />
+
+                                  ))}
+
+                                </div>
+
                               </div>
-                              <div className="px-2 sm:px-3 md:px-4">
-                                <NameItem member={right} align="left" />
+
+                            )
+
+                          }
+
+
+
+                          const half = Math.ceil(members.length / 2)
+
+                          const left = members.slice(0, half)
+
+                          const right = members.slice(half)
+
+                          const maxLen = Math.max(left.length, right.length)
+
+                          return Array.from({ length: maxLen }).map((_, idx) => (
+
+                            <React.Fragment key={`${category}-row-${idx}`}>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+
                               </div>
-                            </>
-                          )
-                        }
-                        if (SINGLE_COLUMN_SECTIONS.has(category) || members.length <= 2) {
-                          return (
-                            <div className="col-span-full">
-                              <div className="max-w-sm mx-auto flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2">
-                                {members.map((member, idx) => (
-                                  <NameItem key={`${category}-${idx}-${member.Name}`} member={member} align="center" />
-                                ))}
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+
                               </div>
-                            </div>
-                          )
-                        }
-                        // Default two-column sections: render row-by-row pairs to keep alignment on small screens
-                        const half = Math.ceil(members.length / 2)
-                        const left = members.slice(0, half)
-                        const right = members.slice(half)
-                        const maxLen = Math.max(left.length, right.length)
-                        const rows = []
-                        for (let i = 0; i < maxLen; i++) {
-                          const l = left[i]
-                          const r = right[i]
-                          rows.push(
-                            <React.Fragment key={`${category}-row-${i}`}>
-                              <div key={`${category}-cell-left-${i}`} className="px-2 sm:px-3 md:px-4">
-                                {l ? <NameItem member={l} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                              </div>
-                              <div key={`${category}-cell-right-${i}`} className="px-2 sm:px-3 md:px-4">
-                                {r ? <NameItem member={r} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                              </div>
+
                             </React.Fragment>
-                          )
-                        }
-                        return rows
-                      })()}
-                    </TwoColumnLayout>
-                  </div>
-                )
-              })}
-              
-              {/* Display any other categories not in the ordered list */}
-              {Object.keys(grouped).filter(cat => !ROLE_CATEGORY_ORDER.includes(cat) && cat !== "Other").map((category) => {
-                const members = grouped[category]
-                return (
-                  <div key={category}>
-                    <div className="flex justify-center py-3 sm:py-4 md:py-5 mb-5 sm:mb-6 md:mb-8">
-                      <div className="flex items-center gap-2 w-full max-w-md">
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#751A23]/50 to-[#751A23]/70"></div>
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-1 h-1 bg-[#751A23]/70 rounded-full" />
-                          <div className="w-1.5 h-1.5 bg-[#51080F]/90 rounded-full" />
-                          <div className="w-1 h-1 bg-[#751A23]/70 rounded-full" />
-                        </div>
-                        <div className="h-px flex-1 bg-gradient-to-l from-transparent via-[#751A23]/50 to-[#751A23]/70"></div>
-                      </div>
+
+                          ))
+
+                        })()}
+
+                      </TwoColumnLayout>
+
                     </div>
-                    <TwoColumnLayout singleTitle={category} centerContent={true}>
-                      {(() => {
-                        if (members.length <= 2) {
-                          return (
-                            <div className="col-span-full">
-                              <div className="max-w-sm mx-auto flex flex-col items-center gap-1 sm:gap-1.5 md:gap-2">
-                                {members.map((member, idx) => (
-                                  <NameItem key={`${category}-${idx}-${member.Name}`} member={member} align="center" />
-                                ))}
-                              </div>
-                            </div>
-                          )
-                        }
-                        // Pair row-by-row for other categories as well
-                        const half = Math.ceil(members.length / 2)
-                        const left = members.slice(0, half)
-                        const right = members.slice(half)
-                        const maxLen = Math.max(left.length, right.length)
-                        const rows = []
-                        for (let i = 0; i < maxLen; i++) {
-                          const l = left[i]
-                          const r = right[i]
-                          rows.push(
-                            <React.Fragment key={`${category}-row-${i}`}>
-                              <div key={`${category}-cell-left-${i}`} className="px-2 sm:px-3 md:px-4">
-                                {l ? <NameItem member={l} align="right" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                              </div>
-                              <div key={`${category}-cell-right-${i}`} className="px-2 sm:px-3 md:px-4">
-                                {r ? <NameItem member={r} align="left" /> : <div className="py-0.5 sm:py-1 md:py-1.5" />}
-                              </div>
-                            </React.Fragment>
-                          )
-                        }
-                        return rows
-                      })()}
-                    </TwoColumnLayout>
-                  </div>
-                )
-              })}
-            </>
+
+                  )
+
+                })}
+
+
+
+                {Object.keys(grouped)
+
+                  .filter((cat) => !ROLE_CATEGORY_ORDER.includes(cat))
+
+                  .map((category) => {
+
+                    const members = grouped[category]
+
+                    if (!members || members.length === 0) return null
+
+                    return (
+
+                      <div key={category}>
+
+                        <div className="flex justify-center py-3 sm:py-4 mb-5 sm:mb-6 md:mb-8">
+
+                          <div className="h-px w-32 sm:w-48 bg-gradient-to-r from-transparent via-[#2E041A]/20 to-transparent" />
+
+                        </div>
+
+                        <TwoColumnLayout singleTitle={category} centerContent>
+
+                          {(() => {
+
+                            if (members.length <= 2) {
+
+                              return (
+
+                                <div className="col-span-full">
+
+                                  <div className="max-w-sm mx-auto flex flex-col items-center gap-2.5">
+
+                                    {members.map((member, idx) => (
+
+                                      <NameItem
+
+                                        key={`${category}-${idx}-${member.Name}`}
+
+                                        member={member}
+
+                                        align="center"
+
+                                      />
+
+                                    ))}
+
+                                  </div>
+
+                                </div>
+
+                              )
+
+                            }
+
+                            const half = Math.ceil(members.length / 2)
+
+                            const left = members.slice(0, half)
+
+                            const right = members.slice(half)
+
+                            const maxLen = Math.max(left.length, right.length)
+
+                            return Array.from({ length: maxLen }).map((_, idx) => (
+
+                              <React.Fragment key={`${category}-row-${idx}`}>
+
+                                <div className="px-3 sm:px-4 md:px-6">
+
+                                  {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+
+                                </div>
+
+                                <div className="px-3 sm:px-4 md:px-6">
+
+                                  {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+
+                                </div>
+
+                              </React.Fragment>
+
+                            ))
+
+                          })()}
+
+                        </TwoColumnLayout>
+
+                      </div>
+
+                    )
+
+                  })}
+
+              </div>
+
             )}
+
           </div>
+
         </div>
+
       </div>
+
     </section>
+
   )
+
 }

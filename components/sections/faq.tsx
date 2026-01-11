@@ -1,207 +1,463 @@
 "use client"
 
 import { useState } from "react"
+
 import { ChevronDown } from "lucide-react"
+
 import { Section } from "@/components/section"
-import { Cormorant_Garamond } from "next/font/google"
+
+import { Great_Vibes, Playfair_Display, Inter } from "next/font/google"
+
 import { siteConfig } from "@/content/site"
 
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-})
+
+
+const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400" })
+
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600"] })
+
+const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600"] })
+
+
 
 interface FAQItem {
+
   question: string
+
   answer: string
+
 }
 
+
+
 const faqItems: FAQItem[] = [
+
   {
-    question: "When is the wedding?",
+
+    question: "What is the dress code for Kaith's debut?",
+
     answer:
-      `Our wedding will be held on ${siteConfig.ceremony.date} (${siteConfig.ceremony.day}) at ${siteConfig.ceremony.time}. We kindly ask guests to arrive by ${siteConfig.ceremony.guestsTime} to help us begin promptly.`,
+
+      "Ladies: Pure black long gown.\n\nGentlemen: Tuxedo.\n\nKindly avoid bright, neon, or overly casual attire to keep the evening elegant and sophisticated.",
+
   },
+
   {
-    question: "Where will the ceremony and reception take place?",
+
+    question: "When and where is the debut celebration?",
+
     answer:
-      `The ceremony will be held at ${siteConfig.ceremony.location}. The reception will follow at ${siteConfig.reception.location}. You can find detailed directions, addresses, and maps in the Details section above.`,
+
+      `Kaith's eighteenth debut is on ${siteConfig.ceremony.day}, ${siteConfig.wedding.date} at ${siteConfig.wedding.time} at ${siteConfig.wedding.venue}. The celebration will take place at ${siteConfig.ceremony.venue}.`,
+
   },
+
   {
+
     question: "What time should I arrive?",
+
     answer:
-      `Kindly arrive by ${siteConfig.ceremony.guestsTime} so we can begin the ceremony promptly at exactly ${siteConfig.ceremony.time}. The entourage will arrive at ${siteConfig.ceremony.entourageTime}. Your punctuality means so much to us!`,
+
+      "Guest doors open at 3:30 PM. We recommend arriving 15-20 minutes early to sign the debut guest book, take portraits, and find your seat before the formal program begins.",
+
   },
+
   {
-    question: "How do I RSVP?",
+
+    question: "When is the RSVP deadline?",
+
     answer:
-      `Please RSVP through the RSVP section on this invitation. Simply search for your name in the guest list, confirm your attendance, and let us know if you'll be bringing companions. We kindly ask for your response by ${siteConfig.details.rsvp.deadline} to help us prepare for the big day.`,
+
+      "Kindly RSVP. Your response helps us prepare for Kaith's special night. [RSVP_LINK]Click here to RSVP[/RSVP_LINK]",
+
   },
+
   {
-    question: "Can I bring a plus one or additional guests?",
+
+    question: "Do you have a gift registry?",
+
     answer:
-      "Each invitation includes a specific number of reserved seats. Please check your invitation details in the RSVP section. If you need to request additional seats, you can use the 'Request to Join' feature, and we'll do our best to accommodate based on availability.",
+
+      "Your presence is the most precious gift for Kaith's debut celebration. If you wish to share a token of love, we welcome monetary gifts that will help her pursue her dreams and aspirations.",
+
   },
+
   {
-    question: "Is there a dress code?",
+
+    question: "Is there parking available at the venue?",
+
     answer:
-      `Yes! We kindly request our guests to dress in formal attire matching our wedding colors. Please see the Attire section in Details for specific guidelines:\n\nPrincipal Sponsors:\n• Male: Barong, Black Pants and Leather Shoes\n• Female: variants of beige\n\nWedding Guests:\n• Formal or Semi Formal attire\n• We encourage you to dress according to our wedding color to help create a soft, elegant romantic celebration.`,
+
+      "Yes! Complimentary parking is available at De Guzman's Events Place. Just mention Kaith's debut at the gate. We recommend arriving early to secure a spot.",
+
   },
+
   {
-    question: "Will there be assigned seating?",
+
+    question: "Can I bring additional guests?",
+
     answer:
-      "Yes, there will be assigned seating at the reception. Your table number will be displayed in the Book of Guests section once your RSVP is confirmed. Our reception team will gladly guide you to your table so you can relax and enjoy the celebration.",
+
+      "We kindly ask that any additional guests be included in your RSVP so we can make proper arrangements. Please update your guest count when you submit your RSVP. Thank you for helping us create a perfect celebration for Kaith!",
+
   },
+
   {
-    question: "Is there parking available?",
-    answer:
-      "Yes, parking is available at both venues. Please follow the parking signs and instructions from our venue coordinators.",
-  },
-  {
-    question: "What should I give as a gift?",
-    answer:
-      "With all that we have, we are truly blessed. Your presence and prayers are what we request most. However, if you desire to give nonetheless, a monetary gift to help us begin our new life together would be humbly appreciated. You can find our gift registry information in the Gift Guide section.",
-  },
-  {
-    question: "Can I take photos and videos during the ceremony?",
-    answer:
-      "We have a professional photographer and videographer capturing our special moments. We kindly ask that you keep your phones on silent and refrain from taking photos during the ceremony. However, we'd love to see your photos and videos from the reception! Please check the Snap & Share section for details on how to upload them.",
-  },
-  {
+
     question: "What if I have dietary restrictions or allergies?",
+
     answer:
-      "Please let us know about any dietary restrictions or allergies when you RSVP. We want to ensure everyone can enjoy the celebration comfortably.",
+
+      "Please mention any dietary restrictions, allergies, or special meal requirements in the message field when you submit your RSVP. We'll do our best to accommodate your needs.",
+
   },
+
   {
-    question: "Will the wedding be indoors or outdoors?",
+
+    question: "Can I take photos during the debut?",
+
     answer:
-      "Our wedding will be held outdoors. We recommend checking the weather forecast and dressing accordingly. Please come prepared for the outdoor setting.",
+
+      "Yes! We have a professional photographer, but you're welcome to capture moments throughout the evening. We'll have a dedicated time for group photos with Kaith after the formal program.",
+
   },
+
+  {
+
+    question: "What should I do if I need to cancel or update my RSVP?",
+
+    answer:
+
+      "Please update your RSVP as soon as possible if your plans change. You can search for your name in the RSVP section and update your response. We appreciate your timely communication!",
+
+  },
+
+  {
+
+    question: "What time does the celebration end?",
+
+    answer:
+
+      "The program wraps by 8:30 PM so you can rest and travel home safely. We want everyone to enjoy the evening while ensuring a safe journey home.",
+
+  },
+
+  {
+
+    question: "Are children welcome at the debut?",
+
+    answer:
+
+      "While we love children, this is a formal evening celebration. We kindly request that only guests listed in your RSVP attend. If you have questions about bringing children, please reach out to us directly.",
+
+  },
+
+  {
+
+    question: "Is there a specific entrance or registration area?",
+
+    answer:
+
+      "Yes, there will be a registration area at the entrance where you can sign the guest book and receive your program. Our ushers will be available to guide you to your assigned table.",
+
+  },
+
+  {
+
+    question: "What if I'm running late?",
+
+    answer:
+
+      "We understand that sometimes delays happen. Please arrive as soon as possible and our ushers will help you find your seat with minimal disruption to the program.",
+
+  },
+
 ]
 
+
+
 export function FAQ() {
+
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
+
+
   const toggleItem = (index: number) => {
+
     setOpenIndex(openIndex === index ? null : index)
+
   }
 
+
+
   return (
+
     <Section
+
       id="faq"
-      className="relative py-12 md:py-16 lg:py-20 overflow-hidden bg-[#751A23]"
+
+      className="relative z-[30] overflow-hidden py-12 sm:py-16 md:py-20 lg:py-24 xl:py-28 bg-[#490505]"
+
     >
-      {/* Background image - matching gallery */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <img
-          src="/Details/newBackground.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+
+      {/* Ornate pattern background */}
+
+      <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+
+        {/* Base pattern - diagonal lines forming diamonds */}
+
+        <div 
+
+          className="absolute inset-0"
+
+          style={{
+
+            backgroundImage: `
+
+              repeating-linear-gradient(45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+
+              repeating-linear-gradient(-45deg, transparent, transparent 70px, rgba(252,225,182,0.1) 70px, rgba(252,225,182,0.1) 71px),
+
+              repeating-linear-gradient(135deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px),
+
+              repeating-linear-gradient(225deg, transparent, transparent 35px, rgba(252,225,182,0.08) 35px, rgba(252,225,182,0.08) 36px)
+
+            `,
+
+            backgroundSize: '70px 70px, 70px 70px, 35px 35px, 35px 35px',
+
+          }}
+
         />
+
+        
+
+        {/* Decorative scroll motifs - using SVG pattern */}
+
+        <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.15 }}>
+
+          <defs>
+
+            <pattern id="scrollPatternFAQ" x="0" y="0" width="140" height="140" patternUnits="userSpaceOnUse">
+
+              {/* Scroll motifs at intersections */}
+
+              <g fill="none" stroke="#FCE1B6" strokeWidth="0.5">
+
+                {/* Top scroll */}
+
+                <path d="M 70 0 Q 65 15 70 30 Q 75 15 70 0" />
+
+                {/* Bottom scroll */}
+
+                <path d="M 70 140 Q 65 125 70 110 Q 75 125 70 140" />
+
+                {/* Left scroll */}
+
+                <path d="M 0 70 Q 15 65 30 70 Q 15 75 0 70" />
+
+                {/* Right scroll */}
+
+                <path d="M 140 70 Q 125 65 110 70 Q 125 75 140 70" />
+
+                {/* Center decorative element */}
+
+                <path d="M 70 30 Q 60 50 70 70 Q 80 50 70 30" />
+
+                <path d="M 70 110 Q 60 90 70 70 Q 80 90 70 110" />
+
+                <path d="M 30 70 Q 50 60 70 70 Q 50 80 30 70" />
+
+                <path d="M 110 70 Q 90 60 70 70 Q 90 80 110 70" />
+
+              </g>
+
+            </pattern>
+
+          </defs>
+
+          <rect width="100%" height="100%" fill="url(#scrollPatternFAQ)" />
+
+        </svg>
+
+
+
+        {/* Subtle overlay for depth */}
+
+        <div className="absolute inset-0 bg-gradient-to-b from-[#490505]/80 via-transparent to-[#490505]/80" />
+
       </div>
 
-      {/* Section Header */}
-      <div className="relative z-30 text-center mb-6 sm:mb-9 md:mb-12 px-3 sm:px-4">
-        {/* Small label */}
-        <p
-          className={`${cormorant.className} text-[0.7rem] sm:text-xs md:text-sm uppercase tracking-[0.28em] text-white mb-2`}
-          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.75)" }}
-        >
-          Everything You Need to Know
-        </p>
+
+
+      <div className="relative z-10 text-center mb-8 sm:mb-10 md:mb-14 lg:mb-16 px-3 sm:px-4">
+
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#FCE1B6]/20 bg-[#490505]/40 px-5 py-2 text-[10px] sm:text-xs tracking-[0.48em] uppercase text-[#FCE1B6]">
+
+          Your Questions Answered
+
+        </div>
 
         <h2
-          className="style-script-regular text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white mb-1.5 sm:mb-3 md:mb-4"
-          style={{ textShadow: "0 4px 18px rgba(0,0,0,0.85)" }}
+
+          className={`${greatVibes.className} text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-[#FCE1B6] drop-shadow-[0_18px_40px_rgba(73,5,5,0.68)] mt-3 sm:mt-4`}
+
         >
+
           Frequently Asked Questions
+
         </h2>
-        
-        <p className={`${cormorant.className} text-xs sm:text-sm md:text-base text-white/90 font-light max-w-xl mx-auto leading-relaxed px-2 mb-2 sm:mb-3`}>
-          Common questions answered to help you prepare for our special day
+
+        <p className={`${inter.className} text-[11px] sm:text-xs md:text-sm lg:text-base text-[#FCE1B6]/85 max-w-2xl mx-auto mt-3 sm:mt-4 leading-relaxed px-2`}>
+
+          Everything you need to know about Kaith's elegant debut celebration
+
         </p>
 
-        {/* Simple divider */}
-        <div className="flex items-center justify-center gap-2 mt-3 sm:mt-4">
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-gradient-to-r from-transparent via-[#327B72]/80 to-transparent" />
-          <div className="w-1.5 h-1.5 rounded-full bg-white/80" />
-          <div className="w-8 sm:w-12 md:w-16 h-px bg-gradient-to-l from-transparent via-[#327B72]/80 to-transparent" />
-        </div>
       </div>
 
-      {/* FAQ content */}
-      <div className="relative z-30 max-w-4xl mx-auto px-3 sm:px-5">
-        {/* Main card */}
-        <div className="relative bg-[#F4F4F4]/95 backdrop-blur-md border border-[#327B72]/60 rounded-lg sm:rounded-xl md:rounded-2xl shadow-[0_20px_60px_rgba(117,26,35,0.3)] overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#327B72]/10 via-transparent to-[#751A23]/5 pointer-events-none" />
-          
-          {/* FAQ items */}
-          <div className="relative p-2.5 sm:p-4 md:p-5 lg:p-6">
-            <div className="space-y-1.5 sm:space-y-2 md:space-y-3">
+
+
+      <div className="relative z-10 max-w-4xl mx-auto px-3 sm:px-4 md:px-6">
+
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-[28px] md:rounded-[32px] border-2 border-[#FCE1B6]/20 bg-[#FCE1B6] shadow-[0_20px_55px_rgba(73,5,5,0.4)] sm:shadow-[0_26px_70px_rgba(73,5,5,0.45)]">
+
+          <div className="relative px-4 py-6 sm:px-6 sm:py-8 md:px-10 md:py-10 lg:px-12 lg:py-12">
+
+            <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
+
               {faqItems.map((item, index) => {
+
                 const isOpen = openIndex === index
+
                 const contentId = `faq-item-${index}`
+
                 return (
+
                   <div
+
                     key={index}
-                    className="rounded-lg sm:rounded-xl border border-[#327B72]/40 bg-white/50 hover:border-[#751A23]/60 hover:bg-white/70 transition-all duration-300 overflow-hidden shadow-sm"
+
+                    className="group relative overflow-hidden rounded-xl sm:rounded-2xl border-2 border-[#490505]/20 bg-white transition-all duration-300 hover:border-[#490505]/40 hover:shadow-[0_12px_30px_rgba(73,5,5,0.25)]"
+
                   >
+
                     <button
+
                       onClick={() => toggleItem(index)}
-                      className="group w-full px-2.5 sm:px-3 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 lg:py-4 flex items-center justify-between text-left outline-none focus-visible:ring-2 focus-visible:ring-[#751A23]/50 focus-visible:ring-offset-2 transition-colors"
+
+                      className="w-full px-4 py-3.5 sm:px-5 sm:py-4 md:px-6 md:py-5 flex items-start sm:items-center justify-between gap-3 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#490505]/30 transition-colors min-h-[3.5rem] sm:min-h-[4rem]"
+
                       aria-expanded={isOpen}
+
                       aria-controls={contentId}
+
                     >
-                      <span className={`${cormorant.className} font-semibold text-[#751A23] pr-2 sm:pr-3 md:pr-4 text-xs sm:text-sm md:text-base lg:text-lg leading-snug sm:leading-relaxed transition-colors duration-200 group-hover:text-[#327B72]`}>
+
+                      <span
+
+                        className={`${playfair.className} font-semibold text-[#490505] flex-1 text-[13px] sm:text-sm md:text-base lg:text-lg leading-snug sm:leading-relaxed group-hover:text-[#490505]/80 transition-colors duration-200`}
+
+                      >
+
                         {item.question}
+
                       </span>
+
                       <ChevronDown
+
                         size={18}
-                        className={`text-[#751A23]/60 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#751A23]" : ""} w-4 h-4 sm:w-5 sm:h-5`}
+
+                        className={`text-[#490505]/70 flex-shrink-0 transition-all duration-300 ${isOpen ? "rotate-180 text-[#490505]" : ""} w-4 h-4 sm:w-5 sm:h-5 mt-0.5 sm:mt-0 group-hover:text-[#490505]`}
+
                         aria-hidden
+
                       />
+
                     </button>
 
+
+
                     <div
+
                       id={contentId}
+
                       role="region"
-                      className={`grid transition-all duration-300 ease-out ${
+
+                      className={`grid transition-all duration-500 ease-out ${
+
                         isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+
                       }`}
+
                     >
+
                       <div className="overflow-hidden">
-                        <div className="px-2.5 sm:px-3 md:px-4 lg:px-5 py-2 sm:py-2.5 md:py-3 lg:py-4 bg-white/30 border-t border-[#327B72]/40">
+
+                        <div className="px-4 py-3.5 sm:px-5 sm:py-4 md:px-6 md:py-5 bg-[#490505]/5 border-t border-[#490505]/20">
+
                           {item.answer.includes("[RSVP_LINK]") ? (
-                            <p className={`${cormorant.className} text-[#37413A] font-medium leading-relaxed sm:leading-loose text-xs sm:text-sm md:text-base lg:text-lg whitespace-pre-line tracking-wide`}>
+
+                            <p className={`${inter.className} text-[#490505]/80 leading-relaxed text-[12px] sm:text-sm md:text-base lg:text-lg whitespace-pre-line`}>
+
                               {item.answer.split("[RSVP_LINK]")[0]}
-                              <a 
-                                href="#guest-list" 
-                                className="text-[#751A23] underline font-bold hover:text-[#327B72] transition-colors"
+
+                              <a
+
+                                href="#guest-list"
+
+                                className="text-[#490505] underline font-semibold hover:text-[#490505]/70 transition-colors break-words"
+
                                 onClick={(e) => {
+
                                   e.preventDefault()
-                                  document.getElementById('guest-list')?.scrollIntoView({ behavior: 'smooth' })
+
+                                  document.getElementById("guest-list")?.scrollIntoView({ behavior: "smooth" })
+
                                 }}
+
                               >
+
                                 {item.answer.match(/\[RSVP_LINK\](.*?)\[\/RSVP_LINK\]/)?.[1]}
+
                               </a>
+
                               {item.answer.split("[/RSVP_LINK]")[1]}
+
                             </p>
+
                           ) : (
-                            <p className={`${cormorant.className} text-[#37413A] font-medium leading-relaxed sm:leading-loose text-xs sm:text-sm md:text-base lg:text-lg whitespace-pre-line tracking-wide`}>
+
+                            <p className={`${inter.className} text-[#490505]/80 leading-relaxed text-[12px] sm:text-sm md:text-base lg:text-lg whitespace-pre-line`}>
+
                               {item.answer}
+
                             </p>
+
                           )}
+
                         </div>
+
                       </div>
+
                     </div>
+
                   </div>
+
                 )
+
               })}
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </Section>
+
   )
+
 }
