@@ -312,7 +312,7 @@ export function BookOfGuests() {
                         <div className="flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 md:px-2.5 py-0.5 sm:py-1 bg-gradient-to-r from-[#327B72]/15 to-[#751A23]/10 border border-[#751A23]/40 sm:border-2 rounded sm:rounded-md md:rounded-lg">
                           <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-3.5 md:w-3.5 text-[#751A23]" />
                           <span className="text-[9px] sm:text-[10px] md:text-xs font-semibold sm:font-bold text-[#751A23]">
-                            {guest.tableNumber && guest.tableNumber.trim() !== "" ? (
+                            {guest.tableNumber && String(guest.tableNumber).trim() !== "" ? (
                               <>Table {guest.tableNumber}</>
                             ) : (
                               <span className="text-gray-500 font-medium">Not Assigned</span>

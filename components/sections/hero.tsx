@@ -118,10 +118,10 @@ export function Hero() {
         >
           <div className="space-y-2 sm:space-y-3 mb-2 sm:mb-4">
             <p className="text-xs sm:text-sm md:text-base lg:text-lg uppercase tracking-[0.35em] text-[#FCE1B6]/90 drop-shadow-lg">
-              Join us in a celebration
+              Join us in the celebration
             </p>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-[#ffffff]/90 drop-shadow-lg italic">
-              of a decade and eighteen
+              of a decade and eight
             </p>
             <div className="flex items-center justify-center gap-3 sm:gap-4 py-1">
               <div className="h-px w-12 sm:w-16 md:w-20 bg-gradient-to-r from-transparent via-[#490505]/60 to-[#FCE1B6]" />
@@ -151,14 +151,6 @@ export function Hero() {
           </div>
 
           <div className="space-y-3 sm:space-y-4 md:space-y-5">
-            <p
-              className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-light text-[#FFFFFF] drop-shadow-lg"
-              style={{
-                textShadow: "0 2px 16px rgba(9, 21, 45, 0.9), 0 1px 4px rgba(0,0,0,0.7)",
-              }}
-            >
-              {siteConfig.wedding.date} — {siteConfig.ceremony.day} | {siteConfig.wedding.time}
-            </p>
             <div className="space-y-2 sm:space-y-2.5 md:space-y-3 pt-1 sm:pt-2">
               <p
                 className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl font-medium text-[#FCE1B6] drop-shadow-lg tracking-[0.12em] sm:tracking-[0.16em] md:tracking-[0.2em] lg:tracking-[0.24em]"

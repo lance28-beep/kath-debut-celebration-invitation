@@ -60,7 +60,9 @@ export function Countdown() {
       const monthMap: Record<string, number> = {
         January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
         July: 6, August: 7, September: 8, October: 9, November: 10, December: 11,
-        JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
+        JANUARY: 0, FEBRUARY: 1, MARCH: 2, APRIL: 3, MAY: 4, JUNE: 5,
+        JULY: 6, AUGUST: 7, SEPTEMBER: 8, OCTOBER: 9, NOVEMBER: 10, DECEMBER: 11,
+        JAN: 0, FEB: 1, MAR: 2, APR: 3, JUN: 5,
         JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11
       }
       
@@ -166,7 +168,9 @@ export function Countdown() {
       const monthMap: Record<string, number> = {
         January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
         July: 6, August: 7, September: 8, October: 9, November: 10, December: 11,
-        JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
+        JANUARY: 0, FEBRUARY: 1, MARCH: 2, APRIL: 3, MAY: 4, JUNE: 5,
+        JULY: 6, AUGUST: 7, SEPTEMBER: 8, OCTOBER: 9, NOVEMBER: 10, DECEMBER: 11,
+        JAN: 0, FEB: 1, MAR: 2, APR: 3, JUN: 5,
         JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11
       }
       displayDate = new Date(parseInt(year), monthMap[monthName] ?? 0, parseInt(day))

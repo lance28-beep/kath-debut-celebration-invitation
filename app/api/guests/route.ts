@@ -62,7 +62,7 @@ export async function GET() {
       message: guest.message || '',
       allowedGuests: parseInt(guest.allowedGuests) || 1,
       companions: Array.isArray(guest.companions) ? guest.companions : [],
-      tableNumber: guest.tableNumber || '',
+      tableNumber: guest.tableNumber != null ? String(guest.tableNumber) : '',
       isVip: guest.isVip === true || guest.isVip === 'TRUE',
       status: guest.status || 'pending',
       addedBy: guest.addedBy || '',

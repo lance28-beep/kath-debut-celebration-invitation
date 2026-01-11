@@ -6,8 +6,8 @@ export const siteConfig = {
     groomNickname: "Daniel",
   },
   wedding: {
-    date: "FEB 8, 2026",
-    time: "4PM",
+    date: "FEBRUARY 14, 2026",
+    time: "4:00PM",
     venue: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
     tagline: "are getting married!",
     theme: "Purple & Sage Motif",
@@ -21,8 +21,8 @@ export const siteConfig = {
   ceremony: {
     location: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
     venue: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
-    date: "February 8 2026",
-    day: "Sunday",
+    date: "February 14 2026",
+    day: "Saturday",
     time: "4:00PM",
     entourageTime: "3:30 PM",
     guestsTime: "3:30 PM",
@@ -30,7 +30,7 @@ export const siteConfig = {
   reception: {
     location: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
     venue: "De Guzman's Events Place, Ayos Lumboy, Guimba, Nueva Ecija",
-    date: "FEB 8, 2026",
+    date: "FEBRUARY 14, 2026",
     time: "Reception to follow",
   },
   dressCode: {

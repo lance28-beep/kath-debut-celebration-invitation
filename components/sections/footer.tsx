@@ -28,6 +28,36 @@ export function Footer() {
 
   const year = new Date().getFullYear()
 
+  // Helper function to parse date safely
+  const parseWeddingDate = (): Date => {
+    const dateStr = siteConfig.wedding.date
+    // Try to parse format: "FEBRUARY 14, 2026" or "February 14, 2026" or "FEB 8, 2026"
+    let dateMatch = dateStr.match(/(\w+)\s+(\d+),\s+(\d+)/)
+    
+    // If no match, try format without comma: "February 14 2026"
+    if (!dateMatch) {
+      dateMatch = dateStr.match(/(\w+)\s+(\d+)\s+(\d+)/)
+    }
+    
+    if (dateMatch) {
+      const [, monthName, day, year] = dateMatch
+      const monthMap: Record<string, number> = {
+        January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
+        July: 6, August: 7, September: 8, October: 9, November: 10, December: 11,
+        JANUARY: 0, FEBRUARY: 1, MARCH: 2, APRIL: 3, MAY: 4, JUNE: 5,
+        JULY: 6, AUGUST: 7, SEPTEMBER: 8, OCTOBER: 9, NOVEMBER: 10, DECEMBER: 11,
+        JAN: 0, FEB: 1, MAR: 2, APR: 3, JUN: 5,
+        JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11
+      }
+      return new Date(parseInt(year), monthMap[monthName] ?? 0, parseInt(day))
+    }
+    
+    // Fallback to default parsing
+    return new Date(dateStr)
+  }
+
+  const weddingDate = parseWeddingDate()
+
 
 
   const quotes = [
@@ -316,7 +346,7 @@ export function Footer() {
 
                 >
 
-                  {new Date(siteConfig.wedding.date).toLocaleDateString('en-US', { month: 'long' })}
+                  {weddingDate.toLocaleDateString('en-US', { month: 'long' })}
 
                 </p>
 
@@ -336,7 +366,7 @@ export function Footer() {
 
                 >
 
-                  {new Date(siteConfig.wedding.date).toLocaleDateString('en-US', { day: 'numeric' })}
+                  {weddingDate.toLocaleDateString('en-US', { day: 'numeric' })}
 
                 </p>
 
@@ -352,7 +382,7 @@ export function Footer() {
 
                 <p className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-[#FCE1B6] leading-none tracking-[0.2em] uppercase">
 
-                  {new Date(siteConfig.wedding.date).toLocaleDateString('en-US', { year: 'numeric' })}
+                  {weddingDate.toLocaleDateString('en-US', { year: 'numeric' })}
 
                 </p>
 
