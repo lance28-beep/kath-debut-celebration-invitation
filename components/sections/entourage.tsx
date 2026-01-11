@@ -46,6 +46,8 @@ const ROLE_CATEGORY_ORDER = [
 
   "Circle of Eighteen",
 
+  "Family",
+
   "Event Coordinators",
 
   "Dancers",
@@ -765,6 +767,56 @@ export function Entourage() {
                           {Array.from({ length: maxLen }).map((_, idx) => (
 
                             <React.Fragment key={`sponsors-row-${idx}`}>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+
+                              </div>
+
+                              <div className="px-3 sm:px-4 md:px-6">
+
+                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+
+                              </div>
+
+                            </React.Fragment>
+
+                          ))}
+
+                        </TwoColumnLayout>
+
+                      </div>
+
+                    )
+
+                  }
+
+
+
+                  if (category === "Family") {
+
+                    const familyMembers = members
+
+                    const half = Math.ceil(familyMembers.length / 2)
+
+                    const left = familyMembers.slice(0, half)
+
+                    const right = familyMembers.slice(half)
+
+                    const maxLen = Math.max(left.length, right.length)
+
+                    return (
+
+                      <div key="family">
+
+                        {renderDivider(categoryIndex)}
+
+                        <TwoColumnLayout singleTitle="Family" centerContent>
+
+                          {Array.from({ length: maxLen }).map((_, idx) => (
+
+                            <React.Fragment key={`family-row-${idx}`}>
 
                               <div className="px-3 sm:px-4 md:px-6">
 

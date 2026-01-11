@@ -4,7 +4,6 @@ import {
   Users,
   MessageSquare,
   Crown,
-  FileText,
   LayoutDashboard,
   RefreshCw,
   ExternalLink,
@@ -13,8 +12,8 @@ import {
 import { cn } from "@/lib/utils"
 
 interface DashboardSidebarProps {
-  activeTab: "dashboard" | "guests" | "requests" | "messages" | "entourage" | "details"
-  onTabChange: (tab: "dashboard" | "guests" | "requests" | "messages" | "entourage" | "details") => void
+  activeTab: "dashboard" | "guests" | "requests" | "messages" | "entourage"
+  onTabChange: (tab: "dashboard" | "guests" | "requests" | "messages" | "entourage") => void
   guestRequestCount: number
   messageCount: number
 }
@@ -56,12 +55,6 @@ export function DashboardSidebar({
       icon: Crown,
       badge: null,
     },
-    {
-      id: "details" as const,
-      label: "Wedding Details",
-      icon: FileText,
-      badge: null,
-    },
   ]
 
   return (
@@ -72,7 +65,7 @@ export function DashboardSidebar({
           <div className="w-8 h-8 bg-[#A67C52] rounded-lg flex items-center justify-center">
             <span className="text-white font-serif text-lg">♥</span>
           </div>
-          <span className="font-serif text-lg font-bold text-[#6B4423]">Wedding Invitation</span>
+          <span className="font-serif text-lg font-bold text-[#6B4423]">Debut Invitation</span>
         </div>
         <p className="text-xs text-[#6B7280] uppercase tracking-wide">Dashboard Panel</p>
       </div>

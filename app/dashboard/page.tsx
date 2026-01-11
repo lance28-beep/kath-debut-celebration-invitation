@@ -17,7 +17,6 @@ import { ImprovedGuestList, Guest } from "@/components/improved-guest-list"
 import { GuestRequests } from "@/components/guest-requests"
 import { GuestMessages } from "@/components/guest-messages"
 import { EntourageSponsors } from "@/components/entourage-sponsors"
-import { WeddingDetailsEditor } from "@/components/wedding-details-editor"
 
 interface GuestRequest {
   Name: string
@@ -48,7 +47,7 @@ export default function DashboardPage() {
   const [filteredGuests, setFilteredGuests] = useState<Guest[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<"dashboard" | "guests" | "requests" | "messages" | "entourage" | "details">("dashboard")
+  const [activeTab, setActiveTab] = useState<"dashboard" | "guests" | "requests" | "messages" | "entourage">("dashboard")
   
   // Guest Request state
   const [guestRequests, setGuestRequests] = useState<GuestRequest[]>([])
@@ -64,6 +63,11 @@ export default function DashboardPage() {
 
   // Password - you can change this!
   const DASHBOARD_PASSWORD = "2026" // Change this to your preferred password
+
+  // Set page title
+  useEffect(() => {
+    document.title = "debut invitation:"
+  }, [])
 
   // Check if already authenticated
   useEffect(() => {
@@ -395,14 +399,14 @@ export default function DashboardPage() {
               </div>
               <div className="mb-2">
                 <span className="font-serif text-sm text-[#A67C52]">♥</span>
-                <span className="font-serif text-2xl font-bold text-[#6B4423] mx-2">Wedding Invitation</span>
+                <span className="font-serif text-2xl font-bold text-[#6B4423] mx-2">Debut Invitation</span>
                 <span className="font-serif text-sm text-[#A67C52]">♥</span>
               </div>
               <h1 className="text-2xl font-bold text-[#111827] mb-2">
                 Admin Dashboard
               </h1>
               <p className="text-[#6B7280] text-sm">
-                Enter password to access the wedding management panel
+                Enter password to access the debut management panel
               </p>
             </div>
 
@@ -458,9 +462,8 @@ export default function DashboardPage() {
         <div className="bg-white border-b border-[#E5E7EB] sticky top-0 z-10">
           <div className="px-8 py-4 flex items-center justify-between">
             <div>
-              <h2 className="text-sm text-[#6B7280] font-medium">Welcome back,</h2>
               <h1 className="text-xl font-bold text-[#111827]">
-                {siteConfig.couple.groomNickname} & {siteConfig.couple.brideNickname}
+                Kaith
               </h1>
             </div>
             <div className="flex items-center gap-3">
@@ -561,10 +564,6 @@ export default function DashboardPage() {
               onRefreshSponsors={fetchPrincipalSponsors}
               isLoading={isLoading}
             />
-          )}
-
-          {activeTab === "details" && (
-            <WeddingDetailsEditor />
           )}
         </div>
       </div>

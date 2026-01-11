@@ -4,7 +4,7 @@
  * Example Dashboard Page with Improved Guest List
  * 
  * This is a complete example showing how to integrate the ImprovedGuestList component
- * into your wedding website dashboard.
+ * into your debut website dashboard.
  * 
  * To use this:
  * 1. Set up the Google Apps Script (see GUEST_MANAGEMENT_SETUP.md)
@@ -42,7 +42,7 @@ export default function ImprovedDashboardPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   // Dashboard password - CHANGE THIS!
-  const DASHBOARD_PASSWORD = "wedding2025" // ⚠️ Change this to your preferred password
+  const DASHBOARD_PASSWORD = "debut2025" // ⚠️ Change this to your preferred password
 
   // Check if already authenticated
   useEffect(() => {

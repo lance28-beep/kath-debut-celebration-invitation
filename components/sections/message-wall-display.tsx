@@ -38,7 +38,7 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
     return (
       <div className="space-y-2 sm:space-y-3 md:space-y-4 lg:space-y-6">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="border-2 border-[#751A23]/70 shadow-lg bg-white/85 backdrop-blur-md rounded-xl sm:rounded-2xl">
+          <Card key={i} className="border-2 border-[#751A23]/70 shadow-lg backdrop-blur-md rounded-xl sm:rounded-2xl">
             <CardContent className="p-2.5 sm:p-3 md:p-4 lg:p-5">
               <div className="flex justify-between items-start mb-2 sm:mb-3 md:mb-4">
                 <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4">
@@ -95,7 +95,7 @@ export default function MessageWallDisplay({ messages, loading }: MessageWallDis
       {visibleMessages.map((msg, index) => (
         <Card
           key={index}
-          className={`relative border-2 border-[#751A23]/75 shadow-lg bg-white/88 backdrop-blur-md hover:shadow-2xl hover:border-[#751A23] transition-all duration-500 group overflow-hidden transform rounded-xl sm:rounded-2xl hover:scale-[1.01] ${
+          className={`relative border-2 border-[#751A23]/75 shadow-lg backdrop-blur-md hover:shadow-2xl hover:border-[#751A23] transition-all duration-500 group overflow-hidden transform rounded-xl sm:rounded-2xl hover:scale-[1.01] ${
             isAnimating ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
           }`}
           style={{

@@ -54,7 +54,7 @@ export function Narrative() {
         >
           <div className="w-full max-w-3xl">
             <motion.div
-              className="relative overflow-hidden rounded-3xl border border-[#FCE1B6]/25 bg-[#490505] px-6 sm:px-8 md:px-10 py-8 sm:py-10 md:py-12"
+              className="relative overflow-hidden rounded-3xl border border-[#FCE1B6]/25 px-6 sm:px-8 md:px-10 py-8 sm:py-10 md:py-12"
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

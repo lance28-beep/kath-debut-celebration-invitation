@@ -57,7 +57,7 @@ function MessageForm({ onSuccess, onMessageSent }: MessageFormProps) {
 
     try {
       await fetch(
-        "https://docs.google.com/forms/d/e/1FAIpQLSdIi6Rcaj-w_Bpo0zH9cxhvoLv6VifEV83hhbehPjHKoe6BHA/formResponse",
+        "https://docs.google.com/forms/d/e/1FAIpQLSfiy8yjeCsPG8ZvBxMOwaOnlWxQBgL8QnszGVFqJGxmMtj_0A/formResponse",
         {
           method: "POST",
           mode: "no-cors",
@@ -331,7 +331,7 @@ export function Messages() {
   return (
     <Section
       id="messages"
-      className="relative bg-[#490505] py-14 sm:py-18 md:py-20 lg:py-24 overflow-hidden"
+      className="relative py-14 sm:py-18 md:py-20 lg:py-24 overflow-hidden"
     >
       {/* Ornate pattern background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">

@@ -7,18 +7,18 @@ import { siteConfig } from "@/content/site"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://florence-mae-and-daniel-invites.netlify.app/"
 const canonicalUrl = siteUrl.replace(/\/$/, "")
-const desktopHero = "/Details/LinkPreview.jpg"
-const mobileHero = "/Details/LinkPreview.jpg"
+const desktopHero = "/Details/imageLinkPreview.jpg"
+const mobileHero = "/Details/imageLinkPreview.jpg"
 const eventImageUrl = `${canonicalUrl}${desktopHero}`
 
-const coupleNames = `${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}`
-const eventTitle = `${coupleNames} - Debut Invitation`
-const eventDescription = `Celebrate the debut of ${siteConfig.couple.groomNickname} and ${siteConfig.couple.brideNickname} on ${siteConfig.wedding.date} at ${siteConfig.ceremony.venue}. RSVP, explore their story, and find everything you need to join the celebration.`
+const debutanteName = "Kaith"
+const eventTitle = `${debutanteName} - Debut Invitation`
+const eventDescription = `Celebrate Kaith's debut on ${siteConfig.wedding.date} at ${siteConfig.ceremony.venue}. RSVP, explore the story, and find everything you need to join the celebration.`
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Event",
-  name: `${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} Debut`,
+  name: `${debutanteName}'s Debut`,
   startDate: "2026-03-06T14:00:00+08:00",
   endDate: "2026-03-06T22:00:00+08:00",
   eventStatus: "https://schema.org/EventScheduled",
@@ -49,12 +49,12 @@ const jsonLd = {
   ],
   image: [eventImageUrl],
   description:
-    `You're invited to celebrate the debut of ${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname}. Discover ceremony and reception details, RSVP, and explore their story.`,
+    `You're invited to celebrate Kaith's debut. Discover celebration details, RSVP, and explore the story.`,
   organizer: {
     "@type": "Person",
-    name: coupleNames,
+    name: debutanteName,
   },
-  eventHashtag: `#${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}SayIDo`,
+  eventHashtag: `#KaithsDebut`,
 }
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
@@ -66,18 +66,17 @@ export const metadata: Metadata = {
   metadataBase: new URL(canonicalUrl),
   title: {
     default: eventTitle,
-    template: `%s | ${coupleNames}`,
+    template: `%s | ${debutanteName}`,
   },
   description: eventDescription,
   keywords:
-    `${siteConfig.couple.groomNickname} ${siteConfig.couple.brideNickname} debut, ${siteConfig.ceremony.venue} debut, ${siteConfig.reception.venue} debut, debut invitation, RSVP, debut gallery, message wall, love story, #${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}SayIDo`,
-  applicationName: `${coupleNames} Debut Invitation`,
+    `Kaith debut, ${siteConfig.ceremony.venue} debut, ${siteConfig.reception.venue} debut, debut invitation, RSVP, debut gallery, message wall, #KaithsDebut`,
+  applicationName: `${debutanteName} Debut Invitation`,
   authors: [
-    { name: siteConfig.couple.groomNickname },
-    { name: siteConfig.couple.brideNickname },
+    { name: debutanteName },
   ],
-  creator: coupleNames,
-  publisher: coupleNames,
+  creator: debutanteName,
+  publisher: debutanteName,
   category: "Event",
   formatDetection: {
     email: false,
@@ -101,11 +100,11 @@ export const metadata: Metadata = {
   },
   manifest: "/favicon_io/site.webmanifest",
   openGraph: {
-    title: `${coupleNames} | ${siteConfig.wedding.date}`,
+    title: `${debutanteName} | ${siteConfig.wedding.date}`,
     description:
-      `Celebrate the debut of ${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} on ${siteConfig.wedding.date}. Discover their story, RSVP, and find important details for the ceremony and reception.`,
+      `Celebrate Kaith's debut on ${siteConfig.wedding.date}. Discover the story, RSVP, and find important details for the celebration.`,
     url: canonicalUrl,
-    siteName: `${coupleNames} Debut`,
+    siteName: `${debutanteName}'s Debut`,
     locale: "en_PH",
     type: "website",
     images: [
@@ -115,18 +114,18 @@ export const metadata: Metadata = {
         width: 1200,
         height: 630,
         type: "image/jpeg",
-        alt: `${coupleNames} Debut Invitation - ${siteConfig.wedding.date}`,
+        alt: `${debutanteName} Debut Invitation - ${siteConfig.wedding.date}`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${coupleNames} Debut Invitation`,
+    title: `${debutanteName} Debut Invitation`,
     description:
-      `You're invited to the debut of ${siteConfig.couple.groomNickname} & ${siteConfig.couple.brideNickname} on ${siteConfig.wedding.date}. RSVP, explore their story, and get all the details for the big day! #${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}SayIDo`,
+      `You're invited to Kaith's debut on ${siteConfig.wedding.date}. RSVP, explore the story, and get all the details for the big day! #KaithsDebut`,
     images: [eventImageUrl],
-    creator: `@${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}`,
-    site: `@${siteConfig.couple.groomNickname}And${siteConfig.couple.brideNickname}`,
+    creator: `@KaithsDebut`,
+    site: `@KaithsDebut`,
   },
   robots: {
     index: true,
@@ -140,7 +139,7 @@ export const metadata: Metadata = {
     },
   },
   appleWebApp: {
-    title: coupleNames,
+    title: debutanteName,
     statusBarStyle: "default",
     capable: true,
   },
