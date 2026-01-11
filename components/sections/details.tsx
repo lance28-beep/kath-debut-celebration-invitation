@@ -126,7 +126,7 @@ export function Details() {
                   De Guzman's Events Place
                 </h3>
                 <p className="text-[10px] sm:text-[12px] text-white/80 tracking-[0.24em] uppercase">
-                  Ayos Lumboy, Guimba, Nueva Ecija
+                  Ayos Lomboy, Guimba, Nueva Ecija
                 </p>
               </div>
             </div>
