@@ -240,7 +240,7 @@ export function Entourage() {
 
       <h3
 
-                  className={`${playfair.className} text-xs sm:text-sm md:text-base tracking-[0.45em] uppercase text-[#2E041A] font-semibold mb-2 sm:mb-3 md:mb-4 ${textAlign} ${className}`}
+                  className={`${playfair.className} text-xs sm:text-sm md:text-base tracking-[0.45em] uppercase text-[#2E041A] font-semibold mb-1.5 sm:mb-2 md:mb-2.5 ${textAlign} ${className}`}
 
       >
 
@@ -282,7 +282,7 @@ export function Entourage() {
 
     return (
 
-      <div className={`flex flex-col ${containerAlign} justify-center py-1.5 sm:py-2 md:py-2.5 leading-relaxed`}
+      <div className={`flex flex-col ${containerAlign} justify-center py-1 sm:py-1.5 md:py-2 leading-relaxed`}
 
       >
 
@@ -340,13 +340,13 @@ export function Entourage() {
 
       return (
 
-        <div className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
+        <div className="mb-4 sm:mb-5 md:mb-6 lg:mb-7">
 
           <SectionTitle>{singleTitle}</SectionTitle>
 
           <div
 
-            className={`grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-4 md:gap-x-6 gap-y-2 sm:gap-y-3 md:gap-y-4 ${centerContent ? "max-w-2xl mx-auto" : ""}`}
+            className={`grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-3 md:gap-x-4 gap-y-1.5 sm:gap-y-2 md:gap-y-2.5 ${centerContent ? "max-w-2xl mx-auto" : ""}`}
 
           >
 
@@ -366,7 +366,7 @@ export function Entourage() {
 
       <div className="mb-6 sm:mb-8 md:mb-10 lg:mb-12">
 
-        <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-4 md:gap-x-6 mb-3 sm:mb-4">
+        <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-x-2 sm:gap-x-3 md:gap-x-4 mb-2 sm:mb-2.5">
 
           {leftTitle && (
 
@@ -412,7 +412,7 @@ export function Entourage() {
 
     categoryIndex > 0 && (
 
-      <div className="flex justify-center py-3 sm:py-4 mb-5 sm:mb-6 md:mb-8">
+      <div className="flex justify-center py-2 sm:py-2.5 mb-3 sm:mb-4 md:mb-5">
 
         <div className="h-px w-32 sm:w-48 bg-gradient-to-r from-transparent via-[#2E041A]/20 to-transparent" />
 
@@ -428,13 +428,13 @@ export function Entourage() {
 
       id="entourage"
 
-      className="relative overflow-hidden py-16 sm:py-20 md:py-24 lg:py-28 bg-transparent"
+      className="relative overflow-hidden py-10 sm:py-12 md:py-16 lg:py-20 bg-transparent"
 
     >
 
 
 
-      <div className="relative z-10 text-center mb-10 sm:mb-12 md:mb-16 px-4">
+      <div className="relative z-10 text-center mb-6 sm:mb-8 md:mb-10 px-4">
 
           <div className="inline-flex items-center gap-2 rounded-full border border-[#FCE1B6]/20 bg-[#2E041A]/40 px-5 py-2 text-[10px] sm:text-xs tracking-[0.48em] uppercase text-[#FCE1B6]">
 
@@ -472,7 +472,7 @@ export function Entourage() {
 
           <div className="absolute inset-[10px] sm:inset-[14px] md:inset-[18px] border-2 border-[#2E041A]/20 rounded-lg sm:rounded-xl pointer-events-none" />
 
-          <div className="relative p-5 sm:p-7 md:p-9 lg:p-12">
+          <div className="relative p-4 sm:p-5 md:p-6 lg:p-8">
 
             {isLoading ? (
 
@@ -558,7 +558,7 @@ export function Entourage() {
 
                             <div className="max-w-sm mx-auto">
 
-                              {debutante && <NameItem member={debutante} align="center" showRole />}
+                              {debutante && <NameItem member={debutante} align="center" showRole={false} />}
 
                             </div>
 
@@ -606,13 +606,13 @@ export function Entourage() {
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+                                {left[idx] ? <NameItem member={left[idx]} align="right" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+                                {right[idx] ? <NameItem member={right[idx]} align="left" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
@@ -656,7 +656,7 @@ export function Entourage() {
 
                                 {leftMembers[idx] ? (
 
-                                  <NameItem member={leftMembers[idx]} align="right" />
+                                  <NameItem member={leftMembers[idx]} align="right" showRole={false} />
 
                                 ) : (
 
@@ -670,7 +670,7 @@ export function Entourage() {
 
                                 {rightMembers[idx] ? (
 
-                                  <NameItem member={rightMembers[idx]} align="left" />
+                                  <NameItem member={rightMembers[idx]} align="left" showRole={false} />
 
                                 ) : (
 
@@ -720,13 +720,13 @@ export function Entourage() {
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+                                {left[idx] ? <NameItem member={left[idx]} align="right" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+                                {right[idx] ? <NameItem member={right[idx]} align="left" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
@@ -770,13 +770,13 @@ export function Entourage() {
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+                                {left[idx] ? <NameItem member={left[idx]} align="right" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+                                {right[idx] ? <NameItem member={right[idx]} align="left" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
@@ -820,13 +820,13 @@ export function Entourage() {
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+                                {left[idx] ? <NameItem member={left[idx]} align="right" showRole={category === "Family"} /> : <div className="py-2" />}
 
                               </div>
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+                                {right[idx] ? <NameItem member={right[idx]} align="left" showRole={category === "Family"} /> : <div className="py-2" />}
 
                               </div>
 
@@ -888,6 +888,8 @@ export function Entourage() {
 
                                       align="center"
 
+                                      showRole={false}
+
                                     />
 
                                   ))}
@@ -916,13 +918,13 @@ export function Entourage() {
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+                                {left[idx] ? <NameItem member={left[idx]} align="right" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
                               <div className="px-3 sm:px-4 md:px-6">
 
-                                {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+                                {right[idx] ? <NameItem member={right[idx]} align="left" showRole={false} /> : <div className="py-2" />}
 
                               </div>
 
@@ -956,7 +958,7 @@ export function Entourage() {
 
                       <div key={category}>
 
-                        <div className="flex justify-center py-3 sm:py-4 mb-5 sm:mb-6 md:mb-8">
+                        <div className="flex justify-center py-2 sm:py-2.5 mb-3 sm:mb-4 md:mb-5">
 
                           <div className="h-px w-32 sm:w-48 bg-gradient-to-r from-transparent via-[#2E041A]/20 to-transparent" />
 
@@ -984,6 +986,8 @@ export function Entourage() {
 
                                         align="center"
 
+                                        showRole={category === "Family"}
+
                                       />
 
                                     ))}
@@ -1010,13 +1014,13 @@ export function Entourage() {
 
                                 <div className="px-3 sm:px-4 md:px-6">
 
-                                  {left[idx] ? <NameItem member={left[idx]} align="right" /> : <div className="py-2" />}
+                                  {left[idx] ? <NameItem member={left[idx]} align="right" showRole={category === "Family"} /> : <div className="py-2" />}
 
                                 </div>
 
                                 <div className="px-3 sm:px-4 md:px-6">
 
-                                  {right[idx] ? <NameItem member={right[idx]} align="left" /> : <div className="py-2" />}
+                                  {right[idx] ? <NameItem member={right[idx]} align="left" showRole={category === "Family"} /> : <div className="py-2" />}
 
                                 </div>
 
